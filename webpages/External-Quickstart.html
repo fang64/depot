@@ -1,0 +1,75 @@
+<html><head>
+<title>Depot Quickstart Guide  </title>
+</head><body><h1>Depot Quickstart Guide  </h1>
+
+ <p>This document describes the quickest way to get depot to work for
+you. This document is most useful if you are already familiar with
+depot and want a streamlined view of the release process.
+
+ </p><p>If you are not using an Andrew Workstation for set up please consult
+the External-Setup.txt document, otherwise please see the
+Andrew-Setup.txt document.
+
+ </p><p>For instructions on how to take advantage of the features of
+depot, please refer to the Using-Depot.txt document.
+
+</p><h2>Instructions</h2>
+<ol>
+
+  <p></p><li> Decide on where you want to store collections. The default
+way is to store them in the "depot" directory of the environment
+(e.g. /usr/local/depot).
+
+<p>Collections are defined as directories which contain the files and
+directories of an application. A collection name is defined as the
+name of the directory housing the collection.
+
+ </p><p></p></li><li>Create a depot.pref in the depot directory. If you chose the
+default location listed above,  in the depot.pref put the following
+line:
+<pre>		searchpath * depot
+</pre>
+This tells depot to look in the depot directory for collections.
+
+ <p></p></li><li><i>[optional]</i> Use the program fsi_generate to create the
+"depot.image" file which contains all the stat(2) information of a
+collection. This speeds up depot runs because depot does not have to
+scan the collection; it can just read the file.
+
+To do this, execute the command:
+<pre>	% fsi_generate collection_path &gt; collection_path/depot.image
+</pre>
+where collection_dir is the path to the collection. e.g.
+<pre>	% fsi_generate x11r5 &gt; x11r5/depot.image
+</pre>
+
+ <p>NOTE: If you use the depot.image file then you must keep it up to
+date because depot only reads this file and does not look in the
+collection.
+
+ </p><p></p></li><li><i>[optional]</i> Generate hints to speed things up even more. The hints
+aid in locating the collections to be added and REQUIRE that a
+depot.image file be generated. To create the hint database, execute
+the following command:
+<pre>	% hintservice -set depotdir/depot.hint -image collection_path/depot.image collection_path
+</pre>
+ where "depotdir" is the directory to the depot directory and
+collection_path is the path to the collection. e.g.
+<pre>	% hintservice -set depot.hint -image x11r5/depot.image x11r5
+</pre>
+
+
+ <p></p></li><li>Run depot. Use the command:
+<pre>	depot -T environment -v
+</pre>
+   where "environment" is the environment to be updated. e.g.
+<pre>	depot -T /usr/local -v
+</pre>
+</li></ol>
+<hr>
+Return to: <b>|</b>
+<a href="depot.html">Depot Top Level</a>
+<b>|</b>
+<a href="doc-setup.html">Depot Guides</a>
+<b>|</b>
+</body></html>

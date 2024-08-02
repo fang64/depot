@@ -1,0 +1,270 @@
+<html>
+<head>
+<title>Depot: A Tool for Managing Software Environments</title>
+</head>
+</body>
+<hr><h2>Table of Contents</h2>
+<a href="depot-lisaVI-paper.html#HDT0"><b>Depot: A Tool for Managing Software Environments</b></a>
+
+<ul>
+<a href="depot-lisaVI-paper.html#HDR1"><b>Motivation</b></a>
+
+<ul>
+<a href="depot-lisaVI-paper.html#HDR2">Independence</a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR3">Integration</a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR4">Mobility</a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR5">Simplicity</a>
+</ul>
+
+<a href="depot-lisaVI-paper.html#HDR6"><b>Implementation</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR7"><b>Limitations</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR8"><b>Conclusion</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR9"><b>Acknowledgments</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR10"><b>Availability</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR11"><b>References</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR12"><b>Author Information</b></a>
+<br>
+
+<a href="depot-lisaVI-paper.html#HDR13"><b>Examples</b></a>
+</ul>
+
+
+<hr><!-- This file was created with the fm2html filter.The filter is copyright Norwegian Telecom Research and was programmed by Jon Stephenson von Tetzchner.  --><title>Depot: A Tool for Managing Software Environments</title>
+<h1><a name="HDT0">Depot: A Tool for Managing Software Environments</a></h1>
+<b>Wallace Colyer &amp; Walter Wong<br>
+</b><i>Computing Services<br>
+Carnegie Mellon University</i><p>
+<h2>Abstract</h2><p><ul>
+<i>Depot</i> is a software management tool providing a simple, yet flexible, mechanism for maintaining third party and locally developed software in large heterogeneous computing environments. <i>Depot</i> integrates separately maintained software packages, known as collections, into a common directory hierarchy consisting of a union of all the collections. This common directory is defined as the software environment. A set of configuration options manages interactions and intersections between collections in the environment.<p>
+<i>Depot</i> facilitates the introduction, update, and removal of collections in a software environment. Custom environments and complete test environments can be easily created for individual machines or for sets of machines. Collections with unexpected problems can be replaced with previous versions or simply removed. Individual collections or files can be moved from remote filesystems to the local disks of workstations without the worry that the files may become stale. All this is achieved with minimal wasted disk space and administrative overhead.<p>
+</ul><h2>Introduction</h2> <p>
+The installation and maintenance of application software on Unix platforms has traditionally been a difficult and time consuming process. Many difficulties result from inadequate software release and environment control tools. The situation is aggravated by a complete lack of industry standards, the common use of hard coded paths for file dependencies, and unreasonable assumptions that many software providers make of the installation environment. <p>
+The emergence and popularity of distributed computing has compounded the management problem. A large heterogeneous environment, with thousands of workstations and hundreds of software packages, aggravates the existing problems and adds new problems which must be overcome. 
+To properly manage a software environment several issues must be resolved. An inventory must be maintained containing the origin of all the components of the environment. Software must be thoroughly tested independently as well as in the destination environments. If a critical problem escapes the testing process, the software environment must be smoothly restorable to a previous working state.  <p>
+To properly manage a distributed software environment, there becomes a need to distribute and install software on remote machines, with different architectures, customizations, and configurations. The procedures required must also minimize the workload of the system administrators.
+Many solutions that manage a distributed software environment often bring back the load and availability problems of timesharing systems by increasing the dependence on centrally maintained services. To prevent this, workstations should be able to locally cache commonly used files, as well as maintain a core set of functionality in case of server or network failures. <p>
+A software release management system in complex environments should handle the following issues: <p>
+<ul><li>Distribution
+<li>Installation
+<li>Customization
+<li>Testing
+<li>Removal and restoration</ul> <p>
+By segregating the environment into discrete manageable objects, it is possible to address all these issues. These objects can then be layered to create the user visible environment. Thus, the environment can be looked at either as a whole or in parts.  <p>
+<h2><a name="HDR1">Motivation</a></h2> <p>
+In the past, software had been installed directly into the /usr/local tree. As the number of applications multiplied, the maintenance process became increasingly difficult. No records were kept of the files installed with a software package. This resulted in outdated files from previous versions of software which wasted disk space. Similarly, when two separate applications had files of the same name installed in the same directory, the conflicting file would be overwritten during the installation process, the resulting environment would be seemingly random. It was apparent that there was a serious problem when the software manager made posts containing lists of hundreds of files, asking if anyone knew if they still belonged in /usr/local. <p>
+We felt that there were four key components to solving this problem: independence, integration, mobility and simplicity. <p>
+<h3><a name="HDR2">Independence</a></h3> <p>
+The problem of keeping track of software can be solved by separating sets of related software into independent directory hierarchies called <i>collections</i>. The collection abstraction reduces the complexity of the software environment by creating smaller, well defined, working groups. Each collection is kept in separate locations, so it is simple to determine the origin of all its files. This helps tremendously in finding and reporting problems, as well as cleaning up the environment when updates occur or when the software becomes obsolete. Furthermore, a complete software package can be distributed or shared by simply specifying the location of the collection. <p>
+<i>The Depot</i> [Manh90], developed at the National Institute of Standards and Technology, splits applications into different collections; however, no integration is done. To access files in a collection, the user must be aware of this separation and have a very long list of items on his path. We considered this approach to be too cumbersome in our environment. Many problems had been encountered when making changes to the search paths of the over 10,000 users of our system, many of whom access our filesystem from departmental computing facilities on which we do not have administrative access. Also, this solution doesn't fully take into consideration the problem of two applications installing binaries with the same name. Path conflicts and ordering would be a constant problem. <p>
+<h3><a name="HDR3">Integration</a></h3>
+Not only is it necessary to maintain independent collections for the sake of administrative convenience, but it is also important to unify the collections into a single directory hierarchy. This enables the users to understand the environment and to deal with the need for certain applications to share common directories.<p>
+Many applications need to share directories where common files are kept. Index files are often kept that must be updated whenever any files change in these directories. Two common examples of this are: <i>X11</i> fonts and man pages. With total separation, it becomes increasingly difficult to seamlessly integrate the environment.<p>
+Though the collections are kept physically separated for administrative convenience, they should later be integrated into a common directory hierarchy. This not only solves the problems of path ordering, as well as forcing the conflicts to be resolved, but it allows collections to later be broken up into smaller units without needing to perform major structural modifications. <p>
+<h3><a name="HDR4">Mobility</a></h3>
+The most obvious reason for being able to efficiently move software in and out of environments is for testing. If environments can be created without regard to the actual location of the collections, software can be tested by creating a duplicate of destination environment. For example, it should be possible to generate a software environment that is identical to the current released environment, with the exception of the collection to be tested. Also, if a major problem were uncovered, it should be simple to restore the old environment quickly.<p>
+Distributed filesystems ideally illustrate the concept of mobility. Collections should be able to move between the remote filesystem and the local disk of the client workstation. Collections on the local disk should be updated when new versions come out as transparently as possible. In this manner, rarely used applications may be stored on the remote filesystem, thus conserving local disk space. Commonly used or important applications may be stored on the local disk, thereby increasing access speed and availability. Regardless, the actual location of the software should be transparent to the end user. <p>
+While other systems such as <i>Xhier</i> [Sell91] have recognized the need for independence and integration, no package has really addressed the issue of mobility. Most packages provide only one environment. (/software in the case of <i>Xhier</i> and /depot in the case of NIST's <i>The Depot</i>.) Ideally, multiple environments would be possible. For example, it is desirable to have an environment for fully supported software, such as /usr/local, and another for &quot;unsupported but useful&quot; software, such as /usr/contributed. Moreover, it should be possible to easily move collections from /usr/contributed to /usr/local and vice versa. <p>
+<h3><a name="HDR5">Simplicity</a></h3>
+Paul Anderson [Ande91] described a method of tracking software by tagging files in each collection with a unique Unix userid (uid). This approach satisfied the independence, integration, and to an extent, the mobility requirements. However, the process had a good deal of complexity, as developers were required to do extra work to utilize the system. Additional tools were required, as well, to track and maintain the collections. Furthermore, in a decentralized distributed environment, password files must remain homogenous across all machines.<p>
+Alternatively, simplicity and understandability could be maintained by having each collection imported into the software environment using its own directory hierarchy. For example, a file placed in the bin directory of a collection should appear in the bin directory of the environment. All the software installer should need to determine is the desired directory hierarchy. When the collection appears in the environment it will reflect that hierarchy. The environment maintainer should only need to decide which collections to integrate into the environment and how to resolve any <i>conflicts</i>, when two collections try to install the same file in the same place.<p>
+Additionally, the system can be kept simple by leaving distribution to an alternate mechanism. For example a distributed filesystem, such as <i>AFS<a href="depot-lisaVI-paper.html#FN1">(1)</a></i> [Saty85], or standard software distribution tools such as <i>rdist</i><i> </i>and <i>SUP</i> [Shaf88] may be used. It may be important to incorporate distribution for certain classes of machines, such as laptops, and other computers connected by slow or unreliable network connections, but any distribution solution should be optional. <p>
+Taking all three of these issues into consideration, a system which requires relatively little work can be setup to maintain multiple environments, to easily allow software to be quickly installed and backed out, and to allow individual workstations to be customized by installing different software and by the manner in which the software is installed on the disk. All this can be done while minimizing the overall complexity of maintaining large software environments. <p>
+<h2><a name="HDR6">Implementation</a></h2>
+<i>Depot</i> achieves the goals of independence, integration, mobility and simplicity<i>. Depot</i> is a tool which manages software environments by integrating multiple independent collections into a single directory hierarchy.<p>
+With each invocation, <i>depot</i> processes a single software environment. The software environment starts with a specified directory hierarchy and encompasses everything within it, including subdirectories. Figure 1 shows how a common software environment, /usr/local, is typically organized.<p>
+<a href="d.usenix.fm.figure.id.1.gif"><img src="d.usenix.fm.figure.id.1.gif"> </a>
+<a href="d.usenix.fm.figure.id.2.gif"><img src="d.usenix.fm.figure.id.2.gif"></a>
+ <p>
+
+<i>Depot</i> defines the environment as the union of a set of software collections. Figure 2 shows how collections may be stored in the <i>depot</i> framework. <i>Depot</i> would then integrate the structure presented in Figure 2 into the structure shown in Figure 1. In this manner, the system administrators have the benefit of separation and the users the benefit of integration. <i>Depot</i> will fail prior to updating if there are any conflicts between collections. <p>
+The environment is customized through a set of configuration options. These options determine which collections will be integrated into the environment and how they will be integrated. Conflicts between collections can be resolved either by specifying that one collection overrides another or by using configuration options to move files or directory hierarchies.<p>
+To incorporate collections into an environment, specific collections and the path to their location can be listed, search paths can be provided where the first instance of each collection within the path will be used, collections may be located in the depot directory of the environment, or a combination of all methods can be used. <p>
+There are currently two ways a collection can be integrated: copying or linking. For collections that are linked, symbolic links are made from the environment to their location in the collections specific directory. To reduce the overhead of the links, they are made at directory level wherever possible. With the copy option, every file and directory is copied into the target environment. Symbolic links in the collections are copied exactly to the target environment. [see figure 3]<p>
+In many cases, multiple collections need to install files into a common directory. Index files are often kept of the contents of the directory, such as fonts.dir in the case of <i>X11</i> font directories. Through configuration options, there is an automated way of updating the index files. A command can be run whenever a collection or directory has changed.<p>
+<a href="d.usenix.fm.figure.id.3.gif"><img src="d.usenix.fm.figure.id.3.gif"></a><p>
+Before integrating the collections into one environment, <i>depot</i> verifies that the environment is consistent. There must not be any conflicts in the environment. Any conflicts found will result in <i>depot</i> exiting. Files which do not belong to a collection, or which are not marked as special files in the configuration files are deleted, unless otherwise specified. <i>D</i><i>epot</i> will then check to see if any of the collections on its paths have been changed, added or deleted. All the new collections will be added to the environment, all removed collections will be deleted, and any necessary changes for modified collections will be made.<p>
+The integration process may take place either in a shared filesystem or on the local disk of the client workstation. The environment built on the client workstation often depends on collections from the shared filesystem. When software is updated in the shared filesystem, the client workstation must either run <i>depot</i> immediately, or there must be a way for the local workstation environment to remain consistent and fully functional until a scheduled run of <i>depot</i> occurs. <p>
+Requiring all participating machines to run <i>depot</i> simultaneously in a large workstation installation neither feasible nor practical. To accomdate the other alternative, the concept of <i>depot</i> version numbers is introduced. Different versions of a collection are mounted. The highest version is selected and integrated into the environment. A reasonable number of versions are kept so no collections will be erased before a workstation has an opportunity to run <i>depot</i>. Thus, functionality and consistency of the environment is preserved.<p>
+By integrating multiple independent collections into a single environment, <i>depot</i> achieves independence and integration. The search paths, version numbers, and different updating strategies, provide mobility by allowing the integration of new or different versions of a software package from different locations. Finally, the mirroring of directory hierarchies and simple configuration options are easy for administrators and software developers to understand and use, thereby achieving the goal of simplicity.<p>
+<h2><a name="HDR7">Limitations</a></h2>
+<i>Depot</i> is only able to operate inside a single environment. Software managed in /usr/local cannot be moved by <i>depot</i> outside of /usr/local. Software or files that need to be copied into the operating system areas will require another program to do so, or for the environment <i>depot</i> maintained, to be extended to the entire workstation.<p>
+In previous versions, <i>depot</i> was only able to operate at the collection level. There was no way to specify individual files or directories to be copied, either the entire collections was copied or the entire collection was linked. This strict separation, with no single file operations, has proven to be too strict. Target specific options have been added to permit individual files or directories to be copied, linked, deleted or ignored, regardless of their collection of origin. For example, several collections may install fonts into the lib/X11/fonts directory and the environment maintainer may wish them to always be copied, regardless of the collection they came from. Similarly, the environment maintainer may choose to link all the files integrated into the man or doc directories to conserve space. Since these options work only by changing the behavior when a file is mapped out of a collection into the target directory, and they do not modify the resulting structure, the sanctity of the collection is maintained, and a great deal of flexibility is achieved for the environment maintainer.<p>
+Currently <i>depot</i> is somewhat inefficient at dealing with very large environments. The time it takes to search its databases and to stat(2) source directories for changed collections increases as the environment grows. Some enhancements have been made to speed up the checking of collections within <i>AFS</i> volumes,<a href="depot-lisaVI-paper.html#FN2">(2)</a> but these have not been sufficient. A network server or hint files, containing modification dates of collections and information about their tree structure, may be needed. A complete rewrite of the database and customization handling routines is planned.<p>
+By making <i>depot</i> so simple, some additional tools are required for distribution and for detailed tracking of the actual environments. Mark Held [Held92] describes some of the other tools being used with <i>depot</i> to manage the Andrew software environment. <p>
+It has recently become obvious that <i>depot</i> could easily replace package [Youn85], the tool we currently use, and become a complete workstation manager. The environment would be the operating system of the workstation. Each operating system release would be a collection where minor release levels would override the major release. Layered OS products would also be collections in the environment. In order for this to be possible, many issues must be addressed.<i> Depot</i> must also be capable of dealing with target specific mode changes. The environment maintainer may wish a file installed with a different set of modes than it was installed with originally. As a result of our <i>AFS</i> environment, the issue of architecture differences is not addressed by <i>depot</i>. This issue must be handled by the distribution system. <p>
+<h2><a name="HDR8">Conclusion</a></h2>
+In the Andrew environment, where <i>depot</i> was developed, it would be unthinkable to return to before such a tool was available. Installations were lengthy, error prone processes. Often the installation of a new application would break previous applications. There was no smooth way to restore the environment to a previous state. Even though numerous man hours were put into maintaining the environment, the system was essentially in a state of anarchy. <p>
+Today, even with multiple environments, software can be easily installed and removed from the system. Individual workstations can be customized to achieve a degree of network independence with minimal effort by the central staff or workstations owners. Much of <i>depot</i>'s success can be attributed to the four factors discussed earlier: independence, integration, mobility and simplicity. The concept of combining independence and integration provided the manageability we needed without sacrificing the consistency that users demand. Mobility gives us flexibility in configuration and testing. Finally, the simplicity has made it popular with developers and allows us to integrate <i>depot</i> with other tools, rather than trying to make <i>depot</i> a &quot;kitchen sink&quot; tool. <i>Depot</i> has proved to be a flexible mechanism for maintaining our software environment.<p>
+<h2><a name="HDR9">Acknowledgments</a></h2>
+Without the considerable work done by a large number of people <i>depot</i> would not have been possible. Many more people were influential in the creation of <i>depot</i> and the software management procedures along side it. <p>
+In 1988, <i>depot</i> was born during a set of software management brain storming sessions attended by Wallace Colyer, Mark Held, Ted McCabe, and David VanRyzin. Each member of this group contributed to the creation of <i>depot</i>. There were many useful insights gained from previous software management strategies developed in conjunction with the Information Technology Center (ITC) and groups within the Academic Services division at Carnegie Mellon University. Mike Accetta and other members of the School of Computer Science were very helpful during our initial consultations in explaining the strengths and weaknesses of their /usr/misc software management system. /usr/misc provided the initial ideas for the creation of <i>depot</i>. The original prototype was written in <i>perl</i>[Wall91] by Wallace Colyer in 1989. The current version of <i>depot</i> was written by Sohan C. Ramakrishna-Pillai who did an excellent job fighting off creeping featurism.<p>
+We would like to thank Dawn Neuhart for helping to, once and for all, finish this paper.<p>
+A very talented group is currently working on the current and future versions of <i>depot</i>. They are specifically discussing the future of <i>depot</i> as a total workstation manager. This group consists of Sohan C. Ramakrishna-Pillai, Mark Held, Wallace Colyer, Walter Wong, John Myers, Dan Lovinger, and Chris Newman.<p>
+A final set of thanks goes to Mark Held, who is leading the Herculean effort of maintaining our local and third party software. He also undertook the enormous project to migrate all our software into the new architecture and has produced an excellent software development environment based on the framework provided by <i>depot</i>.<p>
+<i>AFS</i> is a trademark of the Transarc Corporation.<br>
+Unix is a trademark of AT&amp;T.<p>
+<h2><a name="HDR10">Availability</a></h2> <p>
+<i>Depot</i> is available via anonymous ftp from:<br>
+export.acs.cmu.edu [128.2.35.66]<br>
+/pub/depot<p>
+Any questions about <i>depot</i> can be sent to depot+@andrew.cmu.edu.<p>
+<h2><a name="HDR11">References</a></h2>
+[Ande91] Anderson, Paul. <i>Managing Program Binaries In a Heterogeneous UNIX Network.</i> <u>LISA V Proceedings</u>. 1991. pp. 1-9.<br>
+[Held92] Held, Mark. <i>Software Management in the Andrew Distributed UNIX System at CMU.</i> Internal documentation, Computing &amp; Communications, Carnegie Mellon University. 1992. Available through <i>AFS</i> /afs/andrew.cmu.edu/acs/asg/doc/software.<br>
+[Manh90] Manheimer, Kenneth, Warsaw, Barry, Clark Stephen, and Rowe, Walter. <i>The Depot: A Framework for Sharing Software Installation Across Organizational and Unix Platform Boundaries</i>. <u>LISA IV Proceedings</u>. 1990. pp. 37-46.<br>
+[Saty85] Satyanarayanan, M., Howard, J. H., Nichols, D. A., Sidebotham N., and Spector A. Z. <i>The ITC Distributed File System: Principles and Design</i>. <u>Proceedings of the 10th ACM Symposium on Operating System Principles</u>. 1985.<br>
+[Sell91] Sellens, John. <i>Software Maintenance in a Campus Environment: The Xhier Approach</i>. <u>LISA V Proceedings</u>. 1991. pp. 21-44.<br>
+[Shaf89] Shafer, Stephen, and Thompson, Mary. <i>The SUP Software Upgrade Protocol</i>. Carnegie Mellon University, School of Computer Science. 1988. This document is available from mach.cs.cmu.edu in /usr/mach/public/doc/sup.ps by anonymous ftp.<br>
+[Side86] Sidebotham, R. N. <i>Volumes: The Andrew File System Data Structuring Primitive.</i> Technical Report CMU-ITC-053. Information Technology Center, Carnegie Mellon University. 1986. <br>
+[Wall91] Wall, Larry, and Schwartz, Randal L. <i>Programming perl</i>. O'Reilly and Associates, Inc. 1991.<br>
+[Youn85] Yount, Russell. <i>Package</i>. Obsolete internal documentation. Academic Services. Carnegie Mellon University. 1985.<br>
+<h2><a name="HDR12">Author Information</a></h2>
+Wallace Colyer is the Andrew Systems Manager at Carnegie Mellon University. Wallace began as a User Consultant specializing in workstation administration issues and somehow took over the entire system. Electronic mail can be sent to: wally+@cmu.edu. <p>
+Walter Wong obtained a B.S. in Cognitive Science at Carnegie Mellon University in 1991. By that time, however, he was already involved with system administration issues in a distributed computing environment. Rather than basking in the glory of a fine graduate school in a small college town, he stayed at Carnegie Mellon to be a system administrator and program for the Andrew Systems group. He can be reached electronically at: Walter.C.Wong@cmu.edu.<br>
+Both authors may be reached via the postal system at:<br>
+  Computing Services<br>
+  Carnegie Mellon University<br>
+  4910 Forbes Avenue<br>
+  Pittsburgh, PA 15213-3890<br>
+<h2><a name="HDR13">Examples</a></h2>
+The following example is a simple use of <i>depot</i> to integrate two collections into an environment called /usr/test. A directory called depot is created under /usr/test which houses the configuration files and collections. There are two collections col1 and col2. Each has its own directory hierarchy which is shown below.<p>
+/usr/test/depot/col1<br>
+  bin/prog1<br>
+  bin/prog2<br>
+  man/man1/prog1.1<br>
+  lib/libprog1.a<br>
+/usr/test/depot/col2<br>
+  bin/prog3<br>
+  man/man1/prog3.1<br>
+  lib/libprog3.a<p>
+A simple configuration file is created telling <i>depot</i> to use the modification times to tell if a file has changed.<p>
+% <b>cat /usr/test/depot/custom.depot<br>
+</b>usemodtimes: true<p>
+Running <i>depot</i> will integrate these two collection with a common man, lib, and bin directory.<p>
+% <b>cd /usr/test/depot<br>
+</b>% <b>depot -B </b>[this builds the initial database]<br>
+% <b>depot -va<br>
+</b>DIRECTORY ..<br>
+MKDIR ../lib<br>
+LINK depot/col2/lib/libprog3.a ../lib/libprog3.a<br>
+LINK depot/col1/lib/libprog1.a ../lib/libprog1.a<br>
+MKDIR ../man<br>
+MKDIR ../man/man1<br>
+LINK depot/col2/man/man1/prog3.1 ../man/man1/prog3.1<br>
+LINK depot/col1/man/man1/prog1.1 ../man/man1/prog1.1<br>
+MKDIR ../bin<br>
+LINK depot/col2/bin/prog3 ../bin/prog3<br>
+LINK depot/col1/bin/prog2 ../bin/prog2<br>
+LINK depot/col1/bin/prog1 ../bin/prog1<br>
+Backing up old database .. done<br>
+Moving in new database .. done<p>
+Now a directory hierarchy reflecting the union of col1 and col2 has been created under /usr/test.<p>
+/usr/test<br>
+  bin<br>
+    prog1<br>
+    prog2<br>
+    prog3<br>
+  lib<br>
+    libprog1.a<br>
+    libprog3.a<br>
+  man/man1<br>
+    prog1.1<br>
+    prog3.1<p>
+By simply adding a line to the configuration file we can copy the actual files out of the collection into the /usr/test hierarchy.<p>
+% <b>cat custom.depot<br>
+</b>usemodtimes: true<br>
+*.mapcommand: copy<br>
+% <b>depot -va<br>
+</b>DIRECTORY ..<br>
+DIRECTORY ../lib<br>
+REMOVE ../lib/libprog3.a<br>
+COPY depot/col2/lib/libprog3.a ../lib/libprog3.a<br>
+UTIMES ../lib/libprog3.a Sat Apr 4 13:34:50 1992<br>
+REMOVE ../lib/libprog1.a<br>
+COPY depot/col1/lib/libprog1.a ../lib/libprog1.a<br>
+UTIMES ../lib/libprog1.a Sat Apr 4 13:34:36 1992<br>
+DIRECTORY ../bin<br>
+REMOVE ../bin/prog3<br>
+COPY depot/col2/bin/prog3 ../bin/prog3<br>
+UTIMES ../bin/prog3 Sat Apr 4 11:23:16 1992<br>
+REMOVE ../bin/prog1<br>
+COPY depot/col1/bin/prog1 ../bin/prog1<br>
+UTIMES ../bin/prog1 Sat Apr 4 11:22:25 1992<br>
+REMOVE ../bin/prog2<br>
+COPY depot/col1/bin/prog2 ../bin/prog2<br>
+UTIMES ../bin/prog2 Sat Apr 4 11:22:28 1992<br>
+DIRECTORY ../man<br>
+DIRECTORY ../man/man1<br>
+REMOVE ../man/man1/prog3.1<br>
+COPY depot/col2/man/man1/prog3.1 ../man/man1/prog3.1<br>
+UTIMES ../man/man1/prog3.1 Sat Apr 4 13:35:10 1992<br>
+REMOVE ../man/man1/prog1.1<br>
+COPY depot/col1/man/man1/prog1.1 ../man/man1/prog1.1<br>
+UTIMES ../man/man1/prog1.1 Sat Apr 4 11:22:43 1992<br>
+Backing up old database .. done<br>
+Moving in new database .. done<p>
+If we add a new file to a collection, it will be integrated by simply running <i>depot</i> again. The file /usr/test/depot/col2/bin/prog4 is added to the collection col2.<p>
+% <b>depot -va<br>
+</b>DIRECTORY ..<br>
+DIRECTORY ../lib<br>
+DIRECTORY ../man<br>
+DIRECTORY ../man/man1<br>
+DIRECTORY ../bin<br>
+COPY depot/col2/bin/prog4 ../bin/prog4<br>
+UTIMES ../bin/prog4 Sat Apr 4 13:45:52 1992<br>
+Backing up old database .. done<br>
+Moving in new database .. done<p>
+We could setup a new environment /usr/test2 which builds upon the collections in the /usr/test environment. Under the depot directory in /usr/test2 we have a newer versions of col2 and a new collection called col3.<p>
+/usr/test/depot/col2<br>
+  bin/prog3<br>
+  bin/prog4<br>
+  man/man1/prog3.1<br>
+  lib/libprog3.a<br>
+/usr/test2/depot/col3<br>
+  bin/prog5<br>
+  lib/prog5/fonts/prog5.font<br>
+% <b>cd /usr/test2/depot<br>
+</b>% <b>cat custom.depot<br>
+</b>usemodtimes: true<br>
+*.searchpath: /usr/test2/depot,/usr/test/depot<br>
+% <b>depot -B<br>
+</b>% <b>depot -va<br>
+</b>DIRECTORY ..<br>
+MKDIR ../man<br>
+MKDIR ../man/man1<br>
+LINK /usr/test2/depot/col2/man/man1/prog3.1 ../man/man1/prog3.1<br>
+LINK /usr/test/depot/col1/man/man1/prog1.1 ../man/man1/prog1.1<br>
+MKDIR ../lib<br>
+LINK /usr/test2/depot/col3/lib/prog5 ../lib/prog5<br>
+LINK /usr/test/depot/col1/lib/libprog1.a ../lib/libprog1.a<br>
+LINK /usr/test2/depot/col2/lib/libprog3.a ../lib/libprog3.a<br>
+MKDIR ../bin<br>
+LINK /usr/test2/depot/col3/bin/prog5 ../bin/prog5<br>
+LINK /usr/test/depot/col1/bin/prog2 ../bin/prog2<br>
+LINK /usr/test/depot/col1/bin/prog1 ../bin/prog1<br>
+LINK /usr/test2/depot/col2/bin/prog4 ../bin/prog4<br>
+LINK /usr/test2/depot/col2/bin/prog3 ../bin/prog3<br>
+Backing up old database .. done<br>
+Moving in new database .. done<p>
+This created a new environment, test2, using col1 from the test environment along with the newer version of col2 and a new collections col3 from the test2 environment. Note that for lib/prog5 link optimization was accomplished. Since the only collection installing into the lib/prog5 directory was col3 and the entire directory was being imported the symbolic link was made at the highest possible point in the tree.<p>
+<hr><h3>Footnotes</h3><dl compact><dt><a name="FN1">(1)</a><dd>The Andrew Filesystem (AFS) is a large scalable filesystem and is available from the Transarc Corporation.<dt><a name="FN2">(2)</a><dd>Volumes are containers of Unix filesystems, very similar to partitions. They arethe administrative unit of AFS.[Side86]</dl><a name="ENDFILE"><pre> </pre></a>
+</body>
+</html>

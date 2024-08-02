@@ -1,0 +1,558 @@
+<html>
+<head>
+<title>The Software Maintainer's Guide</title>
+</head>
+<body>
+<hr><h2>Table of Contents</h2>
+<a href="#HDT36"><b>The Software Maintainer's Guide</b></a>
+
+<ul>
+<a href="#HDR0"><b>CHAPTER 1  Software Management on Andrew</b></a>
+
+<ul>
+<a href="#HDR1">1.1  Overview</a>
+<br>
+
+<a href="#HDR2">1.2  Software Development Areas</a>
+
+<ul>
+<a href="#HDR3"> 1.2.1  The Source Area</a>
+<br>
+
+<a href="#HDR4"> 1.2.2  The Dest Area</a>
+<br>
+
+<a href="#HDR5"> 1.2.3  The Common Area</a>
+<br>
+
+<a href="#HDR6"> 1.2.4  The Object Area</a>
+</ul>
+
+<a href="#HDR7">1.3  Access Protection</a>
+
+<ul>
+<a href="#HDR8"> 1.3.1  The Commanders group</a>
+<br>
+
+<a href="#HDR9"> 1.3.2  The Visitors group</a>
+<br>
+
+<a href="#HDR10"> 1.3.3  Checking the members of a pts group</a>
+</ul>
+
+<a href="#HDR11">1.4  Environment Maintenance Tool</a>
+</ul>
+
+<a href="#HDR12"><b>CHAPTER 2  Communicating with the Gatekeeper:<br>
+  Using the CARPE Program</b></a>
+
+<ul>
+<a href="#HDR13">2.1  About CARPE</a>
+<br>
+
+<a href="#HDR14">2.2  Creating a Collection</a>
+
+<ul>
+<a href="#HDR15"> 2.2.1  Using the CARPE interface</a>
+<br>
+
+<a href="#HDR16"> 2.2.2  Using the CARPE command line flags</a>
+</ul>
+
+<a href="#HDR17">2.3  Deleting a Collection </a>
+<br>
+
+<a href="#HDR18">2.4  Releasing a Collection</a>
+</ul>
+
+<a href="#HDR19"><b>CHAPTER 3  Documenting Your Software</b></a>
+
+<ul>
+<ul>
+<ul>
+<a href="#HDR20">  Tips for writing Help Files</a>
+</ul>
+</ul>
+</ul>
+
+<a href="#HDR21"><b>CHAPTER 4  Compiling and Installing Your <br>
+  Software</b></a>
+
+<ul>
+<a href="#HDR22">4.1  Modifying the Makefile</a>
+
+<ul>
+<a href="#HDR23"> 4.1.1  Installing Binaries</a>
+<br>
+
+<a href="#HDR24"> 4.1.2  Installing Non-executable files</a>
+<br>
+
+<a href="#HDR25"> 4.1.3  Defining DESTDIR explicitly</a>
+</ul>
+
+<a href="#HDR26">4.2  Building your program</a>
+<br>
+
+<a href="#HDR27">4.3  Testing your program</a>
+</ul>
+
+<a href="#HDR28"><b>CHAPTER 5  Releasing Your Software</b></a>
+
+<ul>
+<a href="#HDR29">5.1  Release Environments</a>
+<br>
+
+<a href="#HDR30">5.2  Sending a Request with CARPE</a>
+<br>
+
+<a href="#HDR31">5.3  Backing out Your Software</a>
+<br>
+
+<a href="#HDR32">5.4  Checking the Time Stamp Database</a>
+</ul>
+
+<a href="#HDR33"><b>CHAPTER 6  The Release Process</b></a>
+
+<ul>
+<a href="#HDR34">6.1  How Depot organizes software</a>
+<br>
+
+<a href="#HDR35">6.2  How Depot finds your software</a>
+</ul>
+</ul>
+
+
+<hr><!-- This file was created with the fm2html filter.The filter is copyright Norwegian Telecom Research and was programmed by Jon Stephenson von Tetzchner.  --><title>The Software Maintainer's Guide</title>
+<h1><a name="HDT36">The Software Maintainer's Guide</a></h1>
+
+This guide is a reference for any individual who develops or maintains software on the Andrew System at Carnegie Mellon University. It provides an overview of our Software Management Structure and explains the tasks you must perform to maintain software under this structure. It also points you to on-line help files and technical reports that can help you further.<p>
+These conventions are followed in the <i>Software Maintainer's Guide</i>:<p>
+
+<ul>
+<li><b>Bold</b> is used for new terms or for emphasis.<br>
+
+<li><i>Italics</i> are used for names or titles. <br>
+
+<li>Typewriter is used for text that appears on the screen.<br>
+
+<li><b>Bold Typewriter</b> is used for text or commands that you type. <br>
+
+<li>Text inside angle brackets <b>&lt; &gt;</b> describes a variable that you type as part of a command. <br>
+
+<li>Avant Garde is used for pathnames to a specific directory or file.<br>
+</ul>
+
+
+<h2><a name="HDR0">CHAPTER 1  Software Management on Andrew</a></h2>
+<h3><a name="HDR1">1.1  Overview</a></h3>
+In order to keep the large amount of software on Andrew organized and easily accessible, Computing Services enforces a Software Management Structure.<p>
+
+<ul>
+<li>Each group of related applications has its own <b>collection</b>. The collection name must be unique, and this name will be associated with the software permanently. For example,<i> gnu-emacs</i> and <i>batmail</i> are collection names. The collection name must have 9 characters or less, and it cannot contain any special characters. <br>
+
+<li>There may be several <b>versions</b> of a collection of software under development. Each version is given a three number designation. The first version is 001, the second is 002, and so forth. <br>
+</ul>
+
+
+<unknown>For administrative reasons, the number of versions you may keep for a collection is limited and depends on who maintains the software. Software maintained by Computing Services may have four versions; software maintained by users may have three versions. </unknown><br>
+
+<ul>
+<li>Each software collection is part of a <b>tree</b>. There are currently three trees <br>
+supported on Andrew: <b>local</b>, <b>contributed</b>, and <b>host</b>. <br>
+</ul>
+
+
+<unknown><i>Local</i> contains software developed or supported by Computing Services, and <i>Contributed</i> contains software developed and supported by users. Both <i>Local</i> and <i>Contributed</i> contain applications that users can run from an Andrew workstation. <i>Host</i> contains software maintained by Computing Services which is used only by machines.</unknown><br>
+
+<ul>
+<li>Within each tree, various <b>system</b> types are supported. Applications can be compiled for one or more of the systems supported on Andrew. For example, sun4411 and pmax_42 are two different system types. <br>
+</ul>
+
+
+When software is released, it is released to an <b>environment</b>. There are two environments on Andrew --- <b>Gamma</b> and <b>Beta</b>. You may only release one version of your application to each environment. <p>
+
+<ul>
+<li><i>Gamma</i> is the normal Andrew environment that is used on cluster machines and most personal workstations.<br>
+
+<li><i>Beta</i> is the environment used by Computing Services employees to ensure the software is working properly before it is released to the campus community. <br>
+</ul>
+
+
+<h3><a name="HDR2">1.2  Software Development Areas</a></h3>
+The areas set aside for software development are in the form of <b>AFS volumes</b>. Volumes are self-contained areas of disk space. Once created, a volume is <b>mounted</b> as a directory in the Andrew File System (AFS). To users, volumes look like any other directory. However, volumes can have more than one pathname, and volumes have a set <b>quota</b> of storage space. An example of a volume is your home directory. Your home directory is a volume mounted on the system as your <br>
+userID. <p>
+As a developer and maintainer, you are given several volumes for your<br>
+software --- <b>source</b>, <b>dest</b>, <b>common</b>, and <b>object</b>. By default, each volume has five megabytes of quota. <p>
+<h4><a name="HDR3"> 1.2.1  The Source Area</a></h4>
+The <b>source</b> area is where you place the sources for your software. <p>
+The mountpoint for your source volume is:<p>
+ /afs/andrew/system/src/&lt;tree&gt;/&lt;collection&gt;/&lt;version&gt; <p>
+ For example:<p>
+ /afs/andrew/system/src/local/gnu-emacs/001<p>
+You may organize the contents of your source volumes in any way you like, as long as everything within the volume is related to your collection. <p>
+<h4><a name="HDR4"> 1.2.2  The Dest Area</a></h4>
+The <b>dest</b> area is where your <b>destination volumes</b> are kept. These are also referred to as<b> release volumes</b>. You get one destination volume for each system type for which you are compiling a current version of your application. When you compile your sources, you will install the software in your destination volumes. See Chapter 4, <i>Compiling and Installing your Software</i> for more information on how this is done. <p>
+The mountpoints for your destination volumes are:<p>
+/afs/andrew/system/dest/&lt;system&gt;/&lt;tree&gt;/&lt;collection&gt;/&lt;version&gt;<p>
+For example:<p>
+ /afs/andrew/system/dest/pmax_42/local/gnu-emacs/001<p>
+<h4><a name="HDR5"> 1.2.3  The Common Area</a></h4>
+If you have a significant amount of information (roughly more than one megabyte) that is shared between the system types you support, you may request a <b>common</b> volume. This is a single volume that contains files for your software that are not system dependent --- for example, your help files. <p>
+This volume appears as the mountpoint common within each of your dest volumes. For example:<p>
+ /afs/andrew/system/dest/pmax_42/local/gnu-emacs/001/common<p>
+<h4><a name="HDR6"> 1.2.4  The Object Area</a></h4>
+The <b>object</b> area is where the objects and executables are built when you compile your software. By default, this area will be on your local disk, in<p>
+/usr/obj/&lt;tree&gt;/&lt;collection&gt;/&lt;version&gt;<p>
+For example:<p>
+ /usr/obj/local/gnu-emacs/001<p>
+You may request object space on AFS if you have special reasons to do so. For example, you may need unstripped binaries for debugging your program.<p>
+The mountpoint for object volumes on AFS is:<p>
+/afs/andrew/system/obj/&lt;system&gt;/&lt;tree&gt;/&lt;collection&gt;/&lt;version&gt;<p>
+For example: <p>
+/afs/andrew/system/obj/pmax_42/local/gnu-emacs/001<p>
+<h3><a name="HDR7">1.3  Access Protection</a></h3>
+Access to each of these development areas is controlled through <b>pts groups</b>. A pts group is used to assign access privileges to several users at once. For more information on pts groups, see the online help for<b> pts</b>. <p>
+<h4><a name="HDR8"> 1.3.1  The Commanders group</a></h4>
+This group contains the userID's of all of the people who will be developing your application. Each collection is automatically given a pts group named:<p>
+sysmaint:&lt;collection&gt;.commanders <p>
+For example:<p>
+sysmaint:gnu-emacs.commanders<p>
+<h4><a name="HDR9"> 1.3.2  The Visitors group</a></h4>
+If you do not want all of the users on the system to be able to read your source files, you should create a visitors group. For example, if you are maintaining proprietary software, you must create a visitors group so that only the individuals listed in the visitors group will be able to access your source files. The visitors group is named:<p>
+sysmaint:&lt;collection&gt;.visitors<p>
+For example:<p>
+systmaint:gnu-emacs.visitors<p>
+<h4><a name="HDR10"> 1.3.3  Checking the members of a pts group</a></h4>
+To display which users are within a protection group, at your system prompt, type:<p>
+<b>pts members sysmaint:&lt;collection&gt;.&lt;group&gt;</b><p>
+For example:<p>
+pts members sysmaint:gnu-emacs.commanders<p>
+<h3><a name="HDR11">1.4  Environment Maintenance Tool</a></h3>
+Environment Maintenance Tool, or <b>EMT</b>, is an application used to manage the <br>
+collections on AFS automatically. Any operation to create, delete, or release software is processed by EMT. This ensures that everything conforms to the software management structure and that the volumes and symbolic links are constructed properly. <p>
+The <b>Gatekeeper</b> (who can be one or more individuals employed by Computing Services), has access to EMT's full functionality within a given tree. Through the <b>CARPE</b> program, you send requests to the Gatekeeper to assign and set up your collections, delete collections, or release software to Beta or Gamma. All of these requests are posted to a set of electronic bboards. You should monitor the following bboards to make sure your requests are recieved and processed.<p>
+org.acs.asg.request.&lt;tree&gt;.complete<p>
+org.acs.asg.request.&lt;tree&gt;.create.pending<p>
+org.acs.asg.request.&lt;tree&gt;.release.beta.pending<p>
+org.acs.asg.request.&lt;tree&gt;.release.gamma.pending<p>
+org.acs.asg.request.&lt;tree&gt;.delete.pending<p>
+For example,<p>
+org.acs.asg.request.local.complete<p>
+<h2><a name="HDR12">CHAPTER 2  Communicating with the Gatekeeper:<br>
+  Using the CARPE Program</a></h2>
+<h3><a name="HDR13">2.1  About CARPE</a></h3>
+CARPE is an automated way to send requests to the Gatekeeper to create, delete, or release collections. <p>
+CARPE is a command line program. You may include all of the necessary information in the first line, or CARPE will ask you questions until it has all the information it needs. All CARPE commands use the same syntax. At your system prompt, type:<p>
+<b>carpe &lt;command&gt; &lt;flags&gt;</b><p>
+<h3><a name="HDR14">2.2  Creating a Collection</a></h3>
+To request that the Gatekeeper create your collection, you must provide the following information:<p>
+
+<ul>
+<li>The name of the tree your software belongs in. For example, <i>local</i> or <br>
+<i>contributed</i>. <br>
+
+<li>The unique and permanent name of your application collection. For example, <i>gnu-emac</i>s. <br>
+
+<li>The version number you need. Version numbers start at 001 and are <br>
+incremented consecutively for each new version. <br>
+
+<li>The system or systems for which the software will be compiled. <br>
+
+<li>The amount of disk space you need<br>
+
+<li>The users who should be in the commanders group<br>
+
+<li>Whether you need source, AFS object, and/or common volumes created<br>
+
+<li>Whether you would like to clone the sources of an earlier version for the new version<br>
+</ul>
+
+
+<b>If you are local tree maintainer</b>, you can create a collection yourself with EMT. You can also set the quota of the collection yourself. <p>
+For information on how to use EMT, see the online help file for <b>EMT</b>. <p>
+<h4><a name="HDR15"> 2.2.1  Using the CARPE interface</a></h4>
+To create a volume, type:<p>
+%<b> carpe create </b><p>
+Carpe will ask you a series of questions about your collection. If you wish to use the default answer, simply press &lt;<b>return</b>&gt; after the question. <p>
+Example 1  <i>Using Carpe to create a collection </i><p>
+% <b>carpe create </b><p>
+Collection name: <b>test<br>
+</b>--------------<p>
+Tree name (default is local):<b>&lt;return&gt;<br>
+</b>--------------<p>
+Enter a list of systems separated byspaces <br>
+(default is sun4411 pmax_42):<b>sun4411 &lt;return&gt;<br>
+</b>--------------<p>
+What version would you like to create (default is 001):<b>&lt;return&gt;<br>
+</b>--------------<p>
+Would you like source volumes created (default is yes)?<b>&lt;return&gt;<br>
+</b>--------------<p>
+Would you like AFS object volumes created (default is no)?<b>&lt;return&gt;<br>
+</b>--------------<p>
+Would you like a common volume created (default is no)?<b>&lt;return&gt;<br>
+</b>--------------<p>
+This is the first version of a collection<br>
+No clone can be made<br>
+--------------<p>
+How much quota would you like for the source volume (default is 5000)? <b>&lt;return&gt;</b><p>
+How much quota would you like for the dest volumes (default is 5000)? <b>&lt;return&gt;<br>
+</b>--------------<p>
+What users should be added to the commanders list (default is none)?<b>&lt;return&gt;<br>
+</b>--------------<p>
+Please enter any additional comments about this request.<br>
+End your input with a ^D<p>
+<b>this is a test</b><p>
+<b>^D</b><p>
+
+CARPE will then send the information to the Gatekeeper. The Gatekeeper will use EMT to create your collection and will notify you when the set-up is complete. For collections in the local tree, it usually takes a day or two. For contributed collections, it takes about a week. <p>
+<h4><a name="HDR16"> 2.2.2  Using the CARPE command line flags</a></h4>
+You may also include all of the relevant information in the command line as flags. <p>
+To do this, type:<p>
+% <b>carpe create &lt;flags&gt;</b><p>
+<pre>
+Table 1 <i>Command Line Flags for the Create Command </i> 
+----------------------------------------------------------------------------------------------------------
+<b><b>Flag</b></b>                             <b><b>Use</b></b>                                                                        
+----------------------------------------------------------------------------------------------------------
+-tree &lt;tree &gt;              Designates the tree where the collection will reside.                      
+-collection &lt;collection &gt;  Designates the name of the collection.                                     
+-version &lt;version&gt;         Designates the version number of the request. Version numbers start at     
+                                 001 and are incremented by one for each new version.                       
+-systems &lt;systems&gt;         Specifies the systems the collection can be used under. Separate the       
+                                 system names by spaces.                                                    
+-C &lt;version &gt;              Specifies which existing version number to clone, or copyt the source      
+                                 files from, to create the new version.                                     
+-nC                              Specifies that a version should not be cloned. Instead, you will create    
+                                 the source files from scratch.                                             
+-ns                              Specifies that a source volume should not be created.                      
+-mkcom                           Creates a common volume for a collection.                                  
+-obj &lt;AFS or local&gt;        Specifies where the object volume will be created, either on AFS or your   
+                                 local disk.                                                                
+-Qsrc &lt;quota&gt;              Requests a new quota for the source volume.                                
+-Qdest &lt;quota&gt;             Requests a new quota for the dest volume.                                  
+-Qcomm &lt;quota&gt;             Requests a new quota for the common volume.                                
+-Qobj &lt;quota&gt;              Requests a new quota for the object volume.                                
+-users &lt;users&gt;             Creates a list of users with access to the volumes.                        
+-U                               Specifies that the request is urgent. You must list the reason in the      
+                                 comments section. This option is only available as a command line flag.    
+                                                                                                            
+----------------------------------------------------------------------------------------------------------
+</pre>
+For example:<p>
+%<b> carpe create -tree local -collections gnu-emacs -version 002 <br>
+-system pmax_42 -C 001 </b><p>
+ CARPE will prompt you for any information that you do not specify with a flag, <p>
+<h3><a name="HDR17">2.3  Deleting a Collection </a></h3>
+To delete a volume, type:<p>
+%<b> </b><b>carpe delete</b><b> </b><p>
+Carpe will ask you for the version numbers and system types you wish to delete and then ask you to confirm each deletion. You may delete more than one version with one request. <p>
+ You may also use the appropriate command line flags.<p>
+<pre>
+Table 2 Command Line Flags for the Delete Command 
+--------------------------------------------------------------------------------------------------------
+<b>Flag</b>                             <b>Use</b>                                                                      
+--------------------------------------------------------------------------------------------------------
+-tree &lt;tree &gt;              Designates the tree where the collection will reside.                    
+-collection &lt;collection &gt;  Designates the name of the collection.                                   
+-version &lt;version&gt;         Designates the version number of the request. Version numbers start at   
+                                 001 and are incremented by one for each new version.                     
+-systems &lt;systems&gt;         Specifies the systems the collection can be used under. Separate the     
+                                 system names by spaces.                                                  
+                                                                                                          
+--------------------------------------------------------------------------------------------------------
+</pre>
+<h3><a name="HDR18">2.4  Releasing a Collection</a></h3>
+For information on releasing a collection with CARPE, see Chapter 5, <i>Releasing your Software</i><p>
+<h2><a name="HDR19">CHAPTER 3  Documenting Your Software</a></h2>
+All releases must have some kind of documentation, which can consist of help files, or man pages, or both. When your software is released, this documentation will become a part of the system documentation database, accessible from the <b>help</b> command. <p>
+
+<ul>
+<li><b>If your software is for the local tree</b>, Computing Services must review your help files before they are released. You should contact the help system maintainer early on in the project, or the release of your application will be delayed until the help files have been reviewed and revised. You should write a first draft containing all of the technical information and then pass it along to the help system maintainer, who will help you complete the process. It is useful to read several existing help files before you try to write your first draft. <br>
+
+<li><b>If your software is for the contributed tree</b>, Computing Services reserves the right to review your documentation. If it is unsatisfactory, release will be delayed until it has been revised. There are two files in /usr/contributed/lib/maintainer that you can use as examples of well-written help files. Every help file and man page in contributed must have two<b> /usr/contributed caveats </b>(one at the beginning and one at the end) and must include your name as the maintainer. <br>
+</ul>
+
+
+All help files should be written in EZ using the<b> .help</b> template provided for you. To access this template, simply create a file named <b>&lt;file name&gt;.help</b> and open it in EZ. <p>
+Man pages should be in <b>troff</b> format. This is sometimes referred to as <b>man</b> format.<p>
+Any changes you make in subsequent releases of your application that affect the behavior of your application must be reflected in your help documents. <p>
+<h5><a name="HDR20">  Tips for writing Help Files</a></h5>
+
+<ul>
+<li>Avoid jargon and negative words. Assume your readers know nothing about Andrew. But organize the information so that your expert readers can skip the information they already know. <br>
+
+<li>Instruct users to type commands &quot;at the system prompt&quot; instead of &quot;in your Typescript window.&quot;<br>
+
+<li>Never use the phrase &quot;hit return.&quot; Use &quot;press ENTER&quot; instead.<br>
+
+<li>Include examples whenever possible.<br>
+
+<li>Test the information you give people. Make sure the directories exist, the files that are supposed to be there are indeed there, and that the names are <br>
+consistent with what you have written.<br>
+
+<li>Don't use rasters, insets, tables, etc., as many people will not be reading these files through the same system.<br>
+
+<li>Keep as much text as possible in plain text. Use italics for pointers to other help files. <br>
+
+<li>If necessary, write two help files --- an introduction and a more detailed file.<br>
+
+<li>Always, always, always spell check and proofread your files. <br>
+</ul>
+
+
+<h2><a name="HDR21">CHAPTER 4  Compiling and Installing Your <br>
+  Software</a></h2>
+<h3><a name="HDR22">4.1  Modifying the Makefile</a></h3>
+Your Makefile should create the appropriate directory structure for your destination volume. Man pages need to go into the appropriate man subdirectory; help files must go into a help subdirectory, libraries into lib, and the executable image goes into bin. If you have any other files, you need to create the appropriate directory in the dest area and install the files there. <p>
+In order for your software to install correctly in your destination volumes, you should use the variable DESTDIR to point to your destination volume.<p>
+A Makefile excerpt follows:<p>
+Example 2  A sample Makefile excerpt<p>
+install:  myprogram myprogram.man libmy.a   myprogram.help<br>
+  -mkdir $(DESTDIR)<br>
+  -mkdir $(DESTDIR)/man<br>
+  -mkdir $(DESTDIR)/man/man1<br>
+  -mkdir $(DESTDIR)/bin<br>
+  -mkdir $(DESTDIR)/lib<br>
+  -mkdir $(DESTDIR)/help<br>
+  install -s myprogram $(DESTDIR)/bin<br>
+  install &lt;lib&gt;.a $(DESTDIR)/lib<br>
+    install -m 644 myprogram.man $(DESTDIR/man/man1/                            myprogram.1<br>
+  install -m 644 myprogram.help (DESTDIR)/help<p>
+
+<h4><a name="HDR23"> 4.1.1  Installing Binaries</a></h4>
+When installing binaries, you should use the -s switch with install. See the Makefile excerpt on the previous page for an example of this switch. This strips the files as they are installed and saves space on the system. If you plan on using a debugger on the program as part of testing, you do not want to use this switch. <p>
+<h4><a name="HDR24"> 4.1.2  Installing Non-executable files</a></h4>
+When installing non-executable files such as text, help, or man files, the -m 644 switch sets the protection bits appropriately during the installation. See the Makefile excerpt on the previous page for an example of this switch. <p>
+<h4><a name="HDR25"> 4.1.3  Defining DESTDIR explicitly</a></h4>
+If your sources are not located in the top level of your source volume, you need to define DESTDIR explicitly. You may either define the DESTDIR explicitly in your Makefile, or you may create top-level Makefile that looks like this:<p>
+Example 3  A top-level Makefile to define DESTDIR<p>
+SUBDIRS= src docs<br>
+<p>
+all install clean:<p>
+      for i in $(SUBDIRS); do (cd $$i;$(MAKE)$(MFLAGS)<br>
+DESTDIR=$(DESTDIR) $@ ) ; done<p>
+
+This Makefile would pass the correct value for DESTDIR to the Makefiles in the lower-level directories, and they in turn would be able to use DESTDIR to install files in the correct location. <p>
+For more information, see the online help files for <b>install</b>. <p>
+<h3><a name="HDR26">4.2  Building your program</a></h3>
+You should run the <b>build</b> program on your Makefile instead of <b>make</b>. To run <i>build</i>, you must be at a machine running the system type you are compiling for. If you have difficulty finding the right kind of workstation, notify your Gatekeeper and he or she will direct you to the appropriate washing machine set aside for compiling software for that system. To run <i>build</i>, at the system prompt type:<p>
+<b>build install </b><p>
+<i>Build</i> does precisely the same things as <i>make</i> with two exceptions. First, it causes the compile to take place in your object area. Second, <i>build</i> automatically sets several variables that can be used in your Makefile, such as the DESTDIR variable <p>
+Before you compile your software, you should make sure that any pathnames your software references are the pathnames to the files as they will be released instead of the pathnames to your development areas. <p>
+Please study the online help on <b>build</b> before you begin installing your files<p>
+<h3><a name="HDR27">4.3  Testing your program</a></h3>
+If you have root access to a machine, you can release your application to that machine using <i>Local Disk Depot</i>. Then, you can test your application on your machine before it is released to the Beta environment. <p>
+For more information on Local Disk Depot, see contact your Gatekeeper. He or she will direct you to the most current information. <p>
+<h2><a name="HDR28">CHAPTER 5  Releasing Your Software</a></h2>
+<h3><a name="HDR29">5.1  Release Environments</a></h3>
+When you have completed compiling and testing your software, you may then release it to a <i>release environment</i>. There are two environments on Andrew.<p>
+
+<ul>
+<li><i>Beta</i>, which allows a pool of Computing Services employees to test your <br>
+software and report any bugs.<br>
+
+<li><i>Gamma</i>, which releases your software to the general environment available on most machines. Software must be stable before it can be released to <i>Gamma</i>. <br>
+</ul>
+
+
+<h3><a name="HDR30">5.2  Sending a Request with CARPE</a></h3>
+To release a version of your software, send a request to the Gatekeeper through CARPE. You must provide the following information to the Gatekeeper:<p>
+
+<ul>
+<li>the name of the collection<br>
+
+<li>the version number<br>
+
+<li>the system types the software runs on<br>
+
+<li>whether it should be released to the <i>Gamma</i> or <i>Beta</i> environment.<br>
+</ul>
+
+
+To request the release of a collection, type:<p>
+%<b> carpe release &lt;collection &gt;</b><p>
+CARPE will then ask you for all of the necessary information. <p>
+You may also use command line flags with the release command. <p>
+<pre>
+Table 3 Command Line Flags for the Release Command 
+-------------------------------------------------------------------------------------------------------
+<b><b>Flag</b></b>                                 <b><b>Use</b></b>                                                                 
+-------------------------------------------------------------------------------------------------------
+-tree &lt;tree name&gt;              Designates the tree where the collection will reside.               
+-collection &lt;collection name&gt;  Designates the name of the collection.                              
+-version &lt;version number&gt;      Designates the version number of the request. Version numbers       
+                                     start at 001 and are incremented by one for each new version.       
+-systems &lt;systems&gt;             Specifies the systems the collection can be used under. Separate    
+                                     the system names by spaces.                                         
+-environment &lt;environment&gt;     Specifies which environment a collection should be released to.     
+-U                                   Specifies that the request is urgent. You must list the reason in   
+                                     the comments section..                                              
+                                                                                                         
+-------------------------------------------------------------------------------------------------------
+</pre>
+The Gatekeeper will process your request with EMT as soon as possible. For local software, Beta releases usually take one work day, Gamma releases usually take three work days. Local software must be in Beta for at least three days before it can be released to Gamma. For contributed software, releases can take several days. <p>
+<h3><a name="HDR31">5.3  Backing out Your Software</a></h3>
+Sometimes, particularly in the Beta environment, you must remove the most recently released version of your software in order to correct serious bugs. To do this, simply request the release of an earlier version of the software.<p>
+However, unless the currently-released version is unusable or damaging, you should simply request a new version, fix the software, and release the new version. <p>
+<h3><a name="HDR32">5.4  Checking the Time Stamp Database</a></h3>
+Computing Services keeps a database of when a collection has been released to a certain tree, environment or system. Sometimes, you may need to see which collections have been released to a specific tree, or maybe you need to see which collections are in beta and gamma. You can do this with the <b>ts</b> command set. You can find out the following information with these commands.<p>
+<pre>
+Table 4 The TS Command Set 
+--------------------------------------------------------------------------------------------
+<b>Command</b>     <b>Information</b>                                                                       
+--------------------------------------------------------------------------------------------
+<b>ts_chkst</b>    The state of a tree, environemt or system at a given time.                        
+<b>ts_changes</b>  The changes in a tree, environment or system between two times.                   
+<b>ts_differ</b>   The differeces betwen beta and gamma environments for a given tree and            
+            system.                                                                           
+<b>ts_since</b>    Which versions of a collection have been released in a given tree, environment,   
+            or system since a specific date.                                                  
+--------------------------------------------------------------------------------------------
+</pre>
+For instructions on how to use these commands, read the man pages in <br>
+/usr/local/man/man8/&lt;command name&gt;.8<p>
+<h2><a name="HDR33">CHAPTER 6  The Release Process</a></h2>
+When EMT releases your software to an environment, it:<p>
+
+<ul>
+<li>Mounts your volume in the appropriate environment<br>
+
+<li>Changes the protections so that you can no longer write to the files and <i>system:anyuser</i> can read the files. <br>
+
+<li>Runs a program called <b>Depot</b> to create a series of symbolic links.<br>
+
+<li>Releases your program so that the campus community can use it. <br>
+</ul>
+
+
+The following sections describe how Depot makes the symbolic links to your software, and show you how to tell Depot how to find your software. <p>
+<h3><a name="HDR34">6.1  How Depot organizes software</a></h3>
+Depot controls the mapping of your software so that all of the parts that make up your collection appear in a single target location.<p>
+On workstations, /usr/contributed program binaries are found under the directory<br>
+<i> </i>/usr/contributed/bin. Similarly, libraries are in /usr/contributed/lib, man pages in <br>
+/usr/contributed/man, and so on. <p>
+However, no real files exist in these directories. Instead, these directories contain symbolic links to the appropriate files underneath<br>
+ /usr/contributed/depot/&lt;collection&gt;. This special subdirectory contains the <br>
+bin, lib, man, and help directories for that specific collection. <p>
+For example, the contributed program <i>myprog</i> will actually sit in the directory:<p>
+/afs/andrew.cmu.edu/system/gamma/pmax_42/contributed/depot/myprog/bin/myprog<p>
+ but users will find it in:<p>
+  /usr/contributed/bin/myprog<p>
+For more information, read the online help files on <i>depot</i> and the technical paper on <i>depot</i>. To retrieve the technical paper, anonymously FTP to <b>export.acs.cmu.edu</b>. The file is in /pub/depot.<p>
+<h3><a name="HDR35">6.2  How Depot finds your software</a></h3>
+Your files and directories will be linked to the /usr/contributed area as they appear at the top level of your destination volume. This linking is done by <i>Depot</i> . For example, if the top level of your destination volume contained<p>
+bin/   lib/   man/<p>
+<i>Depot</i> would link the files beneath bin into /usr/contributed/bin, the files beneath lib into /usr/contributed/lib, and the man subdirectories into<br>
+ /usr/contributed/man.<p>
+However you may have a common volume that contains all of the help f iles for your application. In this case, the default depot links will not work. <p>
+<b>To link your common volume to the system:</b><p>
+<unknown>1.  Create a file in the top level of your destination directory and name it <b>depot.conf </b></unknown><br>
+<unknown>2.  Type the following lines in this file:</unknown><br>
+<unknown><b>/ /</b></unknown><br>
+<unknown><b>common /</b></unknown><br>
+<unknown><b>~afsmountpoint common </b></unknown><br>
+For more information, read the online help for <b>depot.conf</b>. <p>
+<a name="ENDFILE"><pre> </pre></a>
+</body>
+</html>

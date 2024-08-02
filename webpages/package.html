@@ -1,0 +1,224 @@
+<html>
+<head>
+<title>The Andrew Workstation</title>
+</head>
+<body>
+<h1><a name="HDT0">The Andrew Workstation</a></h1>
+This document describes Andrew workstations, their benefits, and their limitations.<p>
+<br>
+Last Update: October 1992
+<br>
+<br>
+<address>Walter C. Wong<br>
+Computing Services<br>
+Carnegie Mellon University</address>
+<hr><h2>Table of Contents</h2>
+<a href="package.html#HDT0"><b>The Andrew Workstation</b></a>
+
+<ul>
+<a href="package.html#HDR1"><b> 1.0  Introduction</b></a>
+<br>
+
+<a href="package.html#HDR2"><b> 2.0  Implementation</b></a>
+<br>
+
+<a href="package.html#HDR3"><b> 3.0  Benefits</b></a>
+
+<ul>
+<a href="package.html#HDR4"> 3.1  Scalable</a>
+<br>
+
+<a href="package.html#HDR5"> 3.2  Optimal Use of Local Disk Space</a>
+<br>
+
+<a href="package.html#HDR6"> 3.3  Low System Maintenance</a>
+<br>
+
+<a href="package.html#HDR7"> 3.4  Software Availability and Reliability</a>
+<br>
+
+<a href="package.html#HDR8"> 3.5  Central Consulting Support</a>
+<br>
+
+<a href="package.html#HDR9"> 3.6  Better Security</a>
+<br>
+
+<a href="package.html#HDR10"> 3.7  Straightforward Configuration of Standard Items</a>
+<br>
+
+<a href="package.html#HDR11"> 3.8  Better Availability</a>
+<br>
+
+<a href="package.html#HDR12"> 3.9  Uniform Environment</a>
+<br>
+
+<a href="package.html#HDR13"> 3.10  Compartmentalized Changes</a>
+</ul>
+
+<a href="package.html#HDR14"><b> 4.0  Limitations</b></a>
+
+<ul>
+<a href="package.html#HDR15"> 4.1  Repartitioning Is Difficult</a>
+<br>
+
+<a href="package.html#HDR16"> 4.2  High Start-up Cost</a>
+<br>
+
+<a href="package.html#HDR17"> 4.3  Distribution is Only via a Distributed Filesystem </a>
+<br>
+
+<a href="package.html#HDR18"> 4.4  &quot;Uncontrolled&quot; Changes</a>
+<br>
+
+<a href="package.html#HDR19"> 4.5  Configuration Files Are Troublesome</a>
+<br>
+
+<a href="package.html#HDR20"> 4.6  Steep Learning Curve</a>
+<br>
+
+<a href="package.html#REF88772"> 4.7  Configuration is File Based</a>
+<br>
+
+<a href="package.html#HDR21"> 4.8  Dependence on the Network</a>
+<br>
+
+<a href="package.html#HDR22"> 4.9  No Dependency Tracking System</a>
+<br>
+
+<a href="package.html#HDR23"> 4.10  Adding Unsupported Services is Difficult</a>
+</ul>
+
+<a href="package.html#HDR24"><b> 5.0  Conclusion</b></a>
+<br>
+
+<a href="package.html#HDR25"><b> 6.0  Acknowledgments</b></a>
+</ul>
+
+
+<hr><!-- This file was created with the fm2html filter.The filter is copyright Norwegian Telecom Research and was programmed by Jon Stephenson von Tetzchner.  -->
+<h2><a name="HDR1"> 1.0  Introduction</a></h2>
+Approximately 400-600 UNIX-based workstations at Carnegie Mellon can be classified as Andrew workstations. An Andrew workstation is loosely defined to be a workstation that runs <i>package</i>, a disk management tool, at boot time and uses the package libraries supplied by the Andrew Systems Group. In practice, an Andrew workstation uses the standard Andrew password file and also runs a locally modified <i>login</i> program which automatically authenticates the user to AFS.<p>
+The following section describes the implementation of the environment. Those familiar with this may want to skip ahead to the next two sections which summarize the benefits as well as the drawbacks of Andrew workstations.<p>
+<h2><a name="HDR2"> 2.0  Implementation</a></h2>
+The first Andrew workstations were totally dependent on the network and on the AFS fileservers. These machines had enough on the local disk to boot and start AFS, provide some <b>/tmp</b> space, and use the remaining space as AFS cache space. Almost everything on the disk was symbolic links to AFS. To keep the symbolic links straight and to keep the files that have to exist on the workstations up to date, tools were developed. <p>
+The first tool is called <i>package</i>. <i>package</i> uses a configuration file that lists every file or directory that should exist on the local workstation and whether it should be copied or linked. When run, <i>package</i> uses that package file to verify that the files or directories on the local disk match those on AFS. If the file does not exist on the local disk, <i>package</i> will copy or link the file to the disk. If a file or a directory does not belong on the local disk then  <i>package</i> will remove it.  <i>package</i> can create identically-configured machines by having each machine use the same package configuration file.<p>
+However<i>, packag</i>e does not allow a workstation owner to tailor his machine configuration or allow the central administration to combine machine dependent information with information which was not architecture specific. When <i>package</i> is combined with <i>mpp</i>, a &quot;macro pre-processor&quot; we begin to get this kind of flexibility. <i>mpp</i> does variable substitution, has a command to include other files, and allows for checks to see if variables have been set. In this manner, different behavior for different workstations is achieved through variable definition. For example, unless there is a variable that defines a workstation to be &quot;beta-linked,&quot; e.g. the software is updated from the &quot;beta&quot; software tree, then the workstation picks up software from the gamma, or the released, software tree.<p>
+Originally, <i>make</i> was used with  <i>package</i> and <i>mpp</i> to build the configuration files. Each department would have a directory in which they could make modifications that were specific to their desired configuration. If the departmental configuration files changed, then the departmental administrator would run <i>make</i> which would call <i>mpp</i> and build a <i>package</i> file. If the central administration made a change, they would also run <i>make</i> and rebuild each department's <i>package</i> file. The workstations would just use the compiled <i>package</i> files.<p>
+This method was still not ideal, as one had to prepare a package file for every possible configuration. The current way of using  <i>package</i> is to have the <i>package</i> file rebuilt on each reboot by <i>mpp</i>. The default workstation configuration is stored on the local disk in <b>/etc/package.proto</b>. There are several benefits for having the workstation build its own package file:<p>
+
+<ul>
+<li>One doesn't have to make sure that precompiled package files are available when the configuration changes.<br>
+
+<li>The workstation itself can now set variables transparently. For instance, the workstation can automatically designate the X server to use, instead of relying on a person to get it right.<br>
+
+<li>No disk space is wasted in storing precompiled package files.<br>
+</ul>
+
+
+The usage of the <b>package.proto</b> file varies depending on whether or not one is managing a single workstation or many. If one is managing his own workstation, it is often convenient to just add variable definitions directly in the <b>package.proto</b>. However, when one manages multiple machines it is not desirable to have to go to each machine and edit the configuration file. In the latter case, <b>package.proto</b> has a single &quot;include&quot;' directive that points to a file on AFS. This way, the configuration of all the machines can be changed by editing a single file. <p>
+In the past, Andrew workstations were heavily dependent on both AFS and the network. While there is still a dependency on AFS, the dependency is no longer critical. That is, machines can be set up such that they are still functional in light of fileserver or network problems.<p>
+<h2><a name="HDR3"> 3.0  Benefits</a></h2>
+<h3><a name="HDR4"> 3.1  Scalable</a></h3>
+A large number of workstations can be easily configured by making changes to a single, central configuration area. That is, the central administration can apply operating system patches and all the workstations will pick up that patch on the next reboot. <p>
+Departmental administrators can also configure each one of their department's workstations to include the departmental library. In this manner, they can manage any number of workstations by changing a single configuration file. <p>
+All of this can be done without machine specific knowledge. That is, it is not necessary to create a database that lists every workstation and what their configuration is. The workstation, itself, defines how it should be configured. So, once the initial work is done, there is almost no cost of adding additional workstations of that type. <p>
+The actual upgrade of a major operating system upgrade (Ultrix 3.1 to Ultrix 4.2) on over 200 clients was done in by simply rebooting the workstations. The preparation for upgrading just the operating system and a &quot;bootstrap&quot; level of functionality took one person approximately 3 days.<p>
+<h3><a name="HDR5"> 3.2  Optimal Use of Local Disk Space</a></h3>
+There are currently mechanisms that allow the workstation administrator to decide how much of the system software he wants to have on the local disk. Using these mechanisms, he can have all of the applications he deems to be important stored on the local disk, which increases the application's start-up speed and makes the program usable if the network or the server goes down. Applications which are not considered to be as important can be stored on AFS, saving a significant amount of local disk space. <p>
+These mechanisms used for the operating system tree do not provide a very good level of granularity. One must decide to copy or to link entire directories and, sometimes, entire directory trees. However, in the <b>/usr/local</b> and <b>/usr/contributed</b> environments, one can have almost anything they want as a file or a link.<p>
+<h3><a name="HDR6"> 3.3  Low System Maintenance</a></h3>
+The Andrew machines are set up such that a reboot should fix many problems and automatically update the operating system. Log files are periodically trimmed and software updates to the operating system can be propagated by rebooting. A system manager of an Andrew workstation does not need to worry about adding new users to the machine nor does he need to concern himself with mail issues. <p>
+<h3><a name="HDR7"> 3.4  Software Availability and Reliability</a></h3>
+<b>/usr/local</b> and <b>/usr/contributed</b> provide gigabytes of compiled software in specific areas on AFS. While it is true that a workstation owner can simply run AFS and link to these locations, it may be the case that other files need to be propagated to the local disk of the workstations. This would be taken care of by package if the machine were an Andrew workstation. <p>
+Software in these environments is generally well tested before being released and since the community that uses the software is reasonably large, problems are frequently detected early and resolved quickly.<p>
+<h3><a name="HDR8"> 3.5  Central Consulting Support</a></h3>
+Support from a central staff is more efficient and effective because of the similarity between Andrew workstations. Even heavily modified configurations contain the same basic building blocks, using the same tools (<i>package</i> and <i>mpp</i>). <p>
+<h3><a name="HDR9"> 3.6  Better Security</a></h3>
+Passwords in the password file are not stored in such a way that allows users to copy it and run brute force cracking programs on it. While brute force methods are available, they are not as common as `crack' and other items that can be readily found on many anonymous FTP sites. This benefit is actually a result of using the authentication mechanisms associated with AFS. <p>
+The central staff also takes the responsibility to monitor developments and problems with system security, alleviating the workstation owners from such concerns.<p>
+Files that don't belong or don't match those on AFS are removed and the `clean' AFS copy is moved in. Again, this method is not fool-proof but can be quite effective.<p>
+<h3><a name="HDR10"> 3.7  Straightforward Configuration of Standard Items</a></h3>
+Commonly desired services can be easily added to many systems by making additions to the central libraries, creating a new variable to be defined in the <b>/etc/package.proto</b> file on the individual workstation.<p>
+For example, to make a machine an anonymous FTP server, the workstation owner only needs to add the following line to his <b>/etc/package.proto</b> file:<p>
+  %define doesanonymousFTP<p>
+If one needs a larger kernel, adding the following line and rebooting will solve the problem:<p>
+  %define specialvmunix server<p>
+In this way, through a series of definitions maintained by the central administration, workstation owners have easy access to a suite of configuration options without being forced to use any which they might not desire.<p>
+<h3><a name="HDR11"> 3.8  Better Availability</a></h3>
+Better availability is achieved by the fact that the configuration of the workstation is clearly defined and that configuration is automatically restorable. <p>
+<h3><a name="HDR12"> 3.9  Uniform Environment</a></h3>
+This provides an environment that is the same as the publicly available cluster machines. Of course, some may not consider this a benefit. <p>
+<h3><a name="HDR13"> 3.10  Compartmentalized Changes</a></h3>
+The system allows for changes to be easily compartmentalized so when it becomes necessary to upgrade all of the local (or departmental) changes are located in configuration files. <p>
+There are four main libraries:<p>
+<unknown>1.  <b>base.generic</b> - this contains definitions that are valid for all system types as well as the definitions that are valid for each machine of a particular system type.</unknown><br>
+<unknown>2.  <b>cmu.readonly</b> - this contains the standard path definitions</unknown><br>
+<unknown>3.  <b>tree.generic</b> - this includes the configuration files for <b>local.generic</b>, where all the local Andrew changes are included and the operating system definitions</unknown><br>
+<unknown>4.  <b>device.generic</b> - this includes the definitions necessary for the devices (i.e. the files in the <b>/dev</b> directory)</unknown><br>
+When an upgrade in the OS occurs or if a new operating system appears, there will be a new operating system configuration file created and a new section in <b>base.generic</b> will be created for definitions specific to operating system. Aside from that, the other package files are not modified much.<p>
+<h2><a name="HDR14"> 4.0  Limitations</a></h2>
+<h3><a name="HDR15"> 4.1  Repartitioning Is Difficult</a></h3>
+The current scheme assumes that the partitions already have filesystems on them and are mounted properly in addition to AFS being running normally. The process required to repartition disks is very likely to be quite complex and very operating system specific. While we think it is possible to do, we haven't needed to do so yet.<p>
+<h3><a name="HDR16"> 4.2  High Start-up Cost</a></h3>
+While this system has very little incremental cost, it does have a fairly high start-up cost. In addition to just compiling local software, it is necessary to analyze the operating system and generate the configuration file. Specifically, one must determine:<p>
+
+<ul>
+<li>How much is minimally required to boot the machine without AFS<br>
+
+<li>What should be on the local disk for performance/availability if the network goes down<br>
+
+<li>What files need to be overridden by local files (e.g. <b>/etc/passwd</b>, <b>/bin/login</b>, etc.)<br>
+
+<li>What OS aspects will we allow users to tailor (e.g. do we allow them to have their own <i>ftpd</i>?)<br>
+
+<li>Is it necessary to allow selective directory copying (e.g. on a Sparc with SunOS 4.1.1 with shared libraries, it is not a gratuitous waste of disk space to copy everything over. With a DECstation and Ultrix 4.2A the amount of stuff DEC provides with the OS and the lack of shared libraries makes copying everything over a real waste of disk space)<br>
+</ul>
+
+
+Before, all of this was done by hand. Now we have a perl script that will automate the generation of the base configuration list. <p>
+<h3><a name="HDR17"> 4.3  Distribution is Only via a Distributed Filesystem </a></h3>
+The system is designed around using a distributed filesystem. Using only a distributed filesystem (DFS) has two distinct disadvantages:<p>
+
+<ul>
+<li>Software cannot be distributed to the fileservers that export the DFS without having circular dependencies<br>
+
+<li>Services which do not normally require a DFS must incur the overhead of a DFS in order to participate in the workstation management system.<br>
+</ul>
+
+
+<h3><a name="HDR18"> 4.4  &quot;Uncontrolled&quot; Changes</a></h3>
+Workstations currently pick up changes whenever the central administration releases the changes. These changes are not always announced and there is no easy way for workstation administrators to be notified of the change or to be asked if they really want that change to occur. Finally, workstation administrators are not able to selectively choose specific changes; it is all or nothing.<p>
+In general, this is not bad. Many users want updates to happen transparently. However, those managing workstations that export production services do not want software changing without warning.<p>
+<h3><a name="HDR19"> 4.5  Configuration Files Are Troublesome</a></h3>
+Maintaining the configuration files used by the current system is a repetitive and time consuming chore. It is not a hard task but one that requires a good deal of precision and creates opportunities for &quot;human&quot; errors.<p>
+For example, adding new DEC Ultrix software may involve significant changes or additions to the configuration files, as DEC has tended to spread layered products all over the operating system tree. Furthermore, one is not able to use DEC's software installation tools since the installation process makes host specific assumptions which may not be appropriate for every machine in the environment.<p>
+<h3><a name="HDR20"> 4.6  Steep Learning Curve</a></h3>
+Workstation customization can be as simple as defining a few variables. However, the variables are not documented, though they should be. At best, electronic mail is sent to a bboard describing the changes. <p>
+If an individual or a department needs to significantly extend what the central administration provides, the learning curve is quite steep because of the lack of expertise and the lack of reasonable documentation. The documentation of the programs themselves as well as the conventions used locally are substandard. Thus, there are only a handful of people capable of doing this task.<p>
+<h3><a name="REF88772"> 4.7  Configuration is File Based</a></h3>
+The update system can make no changes to the files. For example, if a separate <b>crontab</b> file were desired then all that could be specified is an alternate <b>crontab</b>. There is no way to specify that the <b>crontab</b> should be made up of local changes plus the default <b>crontab</b>.<p>
+<h3><a name="HDR21"> 4.8  Dependence on the Network</a></h3>
+This is not necessarily true. A more correct statement is that by default there is a greater dependence on the network and the local administrator must take preventive measures to ensure that his system is not totally dependent on the network. The major dependency ends up being that the user's home directory resides on AFS. There is currently no good solution for having a mirror of the user's home directory on AFS and the local disk of the workstation; setting up an alternate password file runs into the problem listed in section <a href="package.html#REF88772">4.7</a>.<p>
+<h3><a name="HDR22"> 4.9  No Dependency Tracking System</a></h3>
+There isn't a built in mechanism to keep track of dependencies between various services. One has to carefully place services such that if one depends on another that the variable definitions and resolutions come out right since the processing of the package libraries is sequential. (e.g. if foo depends on bar, foo must come first so that it can say that it needs bar).<p>
+<h3><a name="HDR23"> 4.10  Adding Unsupported Services is Difficult</a></h3>
+Some services are not generally available and are somewhat difficult to add. Some examples include standard UNIX mail versus the supported product, AMS (Andrew Messaging System). There are a couple of problems with the current system that make this the case:<p>
+
+<ul>
+<li>The support staff isn't familiar with non-standard configurations.<br>
+
+<li>All overrides must be specified in advance by the central staff. That is, the example, wherbebedefine hasftpd was used, would not work if the central staff did not explicitly add a check for the variable hasftpd.<br>
+
+<li>The multiple directory problem is a result of the fact that <i>package</i> can only specify files on either a directory or a single file basis. Overrides to files or directories must be explicitly stated in the package libraries. The following example illustrates the multiple directory problem. The man directory is generally linked at a high level, i.e. /usr/man is linked to the directory where all the operating system man pages are on AFS. If linked, there is no way for the workstation administrator to add his own man pages since he does not have administrative access over AFS. However, he does have the option of wasting a lot of disk space by specifying that all the man pages are to be copied, and in that manner he can introduce his own man pages. <br>
+</ul>
+
+
+<h2><a name="HDR24"> 5.0  Conclusion</a></h2>
+Basically, while Andrew workstations are not for everyone, the current system does provide a reasonable solution to distributed workstation management for the central staff responsible for the operation of the majority of the machines on campus. Individual groups and owners have a pre-defined set of customization options, but can expect a certain amount of reliability and familiarity with the centrally supported computing environment.<p>
+<h2><a name="HDR25"> 6.0  Acknowledgments</a></h2>
+<i>Package</i> and <i>mpp</i> were originally written in 1985 by Russel Yount with the Information Technology Center (ITC). From 1985 to the present, many people have helped its evolution. The ones that I'm aware of include Carolyn D. Councill, Gregg Lebowitz, Wallace Colyer, Dan Lovinger, and Walter Wong. <p>
+A re-write of package was done by Sohan C. Ramakrishna-Pillai and that version is the one that was picked up by Transarc. <p>
+My apologies if I've forgotten anyone or got any of the history wrong.<p>
+<a name="ENDFILE"><pre> </pre></a>
+</body>
+</html>

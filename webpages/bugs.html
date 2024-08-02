@@ -1,0 +1,71 @@
+<html>
+<head>
+<title>Known  Bugs
+</title>
+</head>
+<body>
+<h1>Known Bugs</h1>
+ <p> Last Update: December 20, 1994
+ <p>
+This is a list of known defects with depot and dpp. The first part of
+each item is the defect tracking number. 
+
+ <p>Feature requests are not included in this list.
+
+<hr>
+
+<h2>Depot</h2>
+<bl>
+<h3>depot.pref Issues</h3>
+<li>  940802-003 - If the ignore statement in the depot.pref is given
+items separated by white space rather than commas, depot will go into
+an infinite loop.
+
+ <p> <li> 940831-003 - the target.owner/target.group depot.pref
+options do not set the directory. They only set files within a
+directory. There is no known workaround.
+
+ <p> <li> 940831-003 - the target.owner/target.group depot.pref
+options do not set the directory. They only set files within a
+directory. There is no known workaround.
+
+ <p> <li> 950220-001 - collection.installmethod will work only with
+copy or link. 
+
+<h3>Runtime Issues</h3>
+
+ <p> <li> 941130-002 - If the modes on a copied file changes but the
+modification time doesn, the modes are not updated on the files. The
+workaround is to 'touch' the changed file, thereby changing the
+modification time. 
+
+ <p>
+<li> 940518-017 - There is a core leak in the LEX/YACC code.
+
+ <p> <li> 940518-015 - The user is not warned if there are duplicate
+preference options (which may result in weird/unexpected behavior).
+
+<p> <li>  950303-001 - Invalid hints genereate odd to bad behavior
+with non-intuitive error messages.  
+</bl>
+ <p><p>
+<h2>Dpp</h2>
+
+ <p> <li> 941010-002 - the ~deletecommand depot.conf option is not
+properly processed. If included in the depot.conf.proto, it will be
+silently discarded and never make it into the final depot.conf. There
+is no workaround.
+
+<p> <li> 950303-002 - searchpath &lt;collection&gt; doesn't work right
+
+<bl>
+</bl>
+
+<hr>
+Return to: <b>|</b>
+<a href="http://andrew2.andrew.cmu.edu/ANDREWII/AndrewII.html">AndrewII Top Level</a>
+<b>|</b>
+<a href="depot.html">Depot Top Level</a>
+<b>|</b>
+</body>
+</html>

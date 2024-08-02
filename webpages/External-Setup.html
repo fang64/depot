@@ -1,0 +1,208 @@
+<html><head>
+<title>
+Non Andrew Workstation Depot Setup Guide
+</title>
+</head><body><h1>Non Andrew Workstation Depot Setup Guide</h1>
+
+ <p>If you are running AFS and have a large software base, it is
+recommended that you go with the EMT model. There is a fairly large
+amount of overhead, but once that is taken care of things are much
+simpler. Take a look at the software management documents in the <a href="depot.html">depot WWW
+page</a>.
+
+ </p><p>This document will primarily concentrate on options that do not
+require AFS. However, it is still recommended that people read the
+software management documents before reading this document in order to
+get a better feel of the philosophy.
+
+This document contains the following sections: 
+ </p><pre>	Specifying Collections
+		Searchpath
+		Path
+	A Sample Setup
+		Simplest Case
+		Installation
+		Releases
+		Multi-Architecture
+		Release Control
+	Conclusion
+</pre>
+
+<h2>Specifying Collections</h2>
+
+ <p>In setting up a depot environment, one has two ways of specifying
+where collections are located: path and searchpath. "path" and
+"searchpath" can happily co-exist with each other in the same
+depot.pref file. Just be aware that in the event that a collection is
+specified with both "path" and "searchpath" the "path" specification
+will be used.
+
+
+</p><h3>Searchpath</h3>
+
+ <p>The searchpath option has depot scan a directory for a list of
+collections. In that directory, the names of the subdirectories will
+become the collection names. 
+
+ </p><p>For example, if you did:
+</p><pre>	searchpath * /opt
+</pre>
+ and in opt you had:
+ <pre>	dcelocal/	SUNWabcd/	gnu-emacs/
+</pre>
+
+ depot would attempt to process those three directories.
+
+<h3>Path</h3>
+
+ <p>The other way of specifying collections is with the 'path'
+qualifier. In the above example, if we wanted to specify gnu-emacs, we
+would have 
+</p><pre>	path gnu-emacs 	/opt/gnu-emacs
+</pre>
+
+ <p>Note: The path option points directly to the directory where the
+files are housed, while searchpath points one level up.
+
+</p><h2>A Sample Configuration</h2>
+
+ <p>For example if you have the following setup:
+</p><pre>	/software/RELEASE	- directory to the released software
+	/software/BETA_TEST	- directory containing software in beta test
+	/software/ALPHA_TEST	- directory containing the software in  alpha test
+</pre>
+ and  you want to  point you users to:
+ <pre>	/usr/software
+ </pre>
+
+You would create /usr/software/depot. All the depot.pref's mentioned
+below should go in this directory.
+
+ <p>For your production machines, the depot.pref could  be
+</p><pre>	searchpath * /software/RELEASE
+</pre>
+
+ <p>For your staff/programmer machines, the depot.pref would include
+beta test software to ensure that most people participate in the beta
+test. The depot.pref would be:
+</p><pre>	searchpath * /software/BETA_TEST, /software/RELEASE
+</pre>
+
+ <p>This would indicate that you should try to pull collections from
+BETA_TEST first and then from RELEASE.  If the same collection exists
+in both locations, take the one first on the searchpath
+(e.g. BETA_TEST). 
+
+ </p><p>For people doing the early testing, the depot.pref could look like:
+</p><pre>	searchpath * /software/BETA_TEST, /software/RELEASE
+	path gnu-emacs /software/ALPHA_TEST/gnu-emacs
+</pre>
+
+ <p>This depot.pref would pull gnu-emacs from the ALPHA_TEST area but
+leave everything else the same.
+
+</p><h3>Simplest Case</h3>
+
+ <p>The simplest case scenario is if you are dealing with a single
+machine. For this, you can use:
+</p><pre>	% mkdir /usr/software/depot
+	% cat &gt; depot.pref
+	searchpath * depot
+	EOF
+</pre>
+ and put all your collections in the depot directory. If you'd like to
+keep the source in the collection as 'src', add the command
+<pre>	specialfile src
+</pre>
+ to the depot.pref and depot will ignore the 'src' directory for all
+collections.
+
+<h3>Software Installation</h3>
+ <p>It is important to note that the installation directory is not
+necessarily the same place from which you might run the software so it
+is often necessary to play some games.
+
+ </p><p>Assuming that you have the setup and you are following the GNU
+configure script, it is generally pretty easy. First, you have to do
+a:
+</p><pre>	 % make all prefix=/usr/software
+</pre>
+ and then do a:
+<pre>	make install prefix=/software/ALPHA_TEST/&lt;collection_name&gt;
+</pre>
+
+ <p>The reason why you need to do the "make all" first is so that any
+hard coded paths get the "/usr/software" path rather than the
+'/software/....' path. This is important as it allows you to move
+these collections between the ALPHA,BETA, and RELEASE directories
+without having to recompile.
+
+</p><h3>Releases</h3>
+
+ <p>Assuming that software is installed into /software/ALPHA_TEST, how
+do you get it into BETA_TEST?  The easiest way is to have some process
+copy the binaries. You should also "lock down" the sources. That is,
+go through and take away write access. This way, you can be assured
+that the sources in that location generated the binaries.
+
+</p><h3>Multi-Architecture</h3>
+
+ <p>If you are supporting more than one system type, you have two
+choices. You can try to deal with the differences inside or outside of
+the collection.
+
+ </p><p>An example of "inside" is that you would have:
+</p><pre>	/usr/software/bin/bar 
+</pre>
+ which is really a shell script that calls /usr/software/bin/.`arch`/bar. 
+
+ <p>An example of the  'outside' model would be that you would have:
+</p><pre>	/software/&gt;arch&gt;/ALPHA_TEST/...
+	/software/&lt;arch&gt;/BETA_TEST/...
+	/software/&lt;arch&gt;/RELEASE/...
+</pre>
+
+ <p>For common stuff, like man pages, It is simpler just to waste the
+disk space.  But, if disk space is tight, you could also have:
+</p><pre>	/software/common/RELEASE_TEST/COMMON-&lt;collection&gt;
+</pre>
+
+ <p>The "COMMON-" prefix to the collection is necessary to distinguish
+between the collection and the common portions of it.
+
+</p><h3>Release Control</h3>
+
+ <p>To follow the EMT model some more, one could expand things by
+adding a timestamp (in place of the EMT version number). For example,
+you could have:
+</p><pre>	/software/src/&lt;collection&gt;/&lt;timestamp&gt;
+	/software/ALPHA_TEST/&lt;collection&gt;~&lt;timestamp&gt;
+	/software/BETA_TEST/&lt;collection&gt;~&lt;timestamp&gt;
+	/software/RELEASE/&lt;collection&gt;~&lt;timestamp&gt;
+</pre>
+
+ <p>(Note the use of '~' the default depot version delimiter) The
+timestamp would be the UNIX time value of when the collection was
+created. 
+
+</p><h2>Conclusion</h2>
+ <p>This is just a proposed way of doing things that has is not
+actually being used. This model is based on the EMT model which works
+well for us. If you have already set up depot and would like to share
+how you are doing so, please feel free to send us mail at
+</p><ul>
+<a href="mailto:depot+@andrew.cmu.edu">
+depot+@andrew.cmu.edu </a>
+</ul>
+ <p>We'd be very happy to add to our WWW server your document on your
+depot setup, or point a URL to the document.
+
+</p><hr>
+Return to: <b>|</b>
+<a href="depot.html">Depot Top Level</a>
+<b>|</b>
+<a href="doc-setup.html">Depot Guides</a>
+<b>|</b>
+
+
+</body></html>

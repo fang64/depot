@@ -1,0 +1,101 @@
+<html>
+<head>
+<title>Depot Frequently Asked Questions </title>
+</head>
+<body>
+<!-- Changed by: Heather Keith, 5/22/97 -->
+<h2>Depot Frequently Asked Questions </h2>
+
+<i> Last Revision: May 22, 1997</i>
+
+<hr>
+NOTE: Questions specific to the Andrew environment are prefaced with
+<b>[ANDREW]</b>.
+
+ <p>
+This document needs to have more questions added!  Please submit
+questions to:
+<ul>
+<a href="mailto:depot+@andrew.cmu.edu">
+depot+@andrew.cmu.edu </a>
+</ul>
+ <p>
+I'll also be indexing this document shortly.
+
+ <hr>
+Q: What has changed between depot v4 and depot v5?
+ <br>A:The <a href="NewToV5.html">NewToV5</a> document describes this.
+
+ <hr>
+Q: /usr/local is its own partition. How do I keep depot from blowing
+away lost+found? 
+ <br>A: Put this in the depot.pref:
+<pre>
+	specialfile lost+found
+</pre>
+
+ <hr>
+Q: I'm getting syntax errors in my depot.pref and everything looks
+right to me.
+ <br>A: Check for colons in the preference options. Depot v5 no longer
+uses colons as separators.
+
+ <hr>
+Q: What's the difference between "path" and "searchpath"?
+<br>
+A: The "path" preference points to the top level of a directory
+hierarchy. In the following directory hierarchy:
+<pre>
+	.../before/foo/
+	.../before/foo/bin
+	.../before/foo/lib
+</pre>
+the path preference would be set to:
+<pre>
+	path foo .../before/foo
+</pre>
+"Searchpath" goes up one level and it takes all the directories as
+collections. E.g. using the example above, it would be:
+<pre>
+	searchpath * .../before
+</pre>
+
+ <hr>
+Q: How do I "hide" a directory?
+ <br>A: You can use ~delete to keep a file or directory from being exported
+to the target directory. If you want every collection to have this
+behavior, put the following into the global depot.conf:
+<pre>
+	* ~delete &lt;dir&gt;
+</pre>
+where &lt;dir&gt; is the directory to be deleted.
+
+ <hr>
+<b>[ANDREW]</b>
+Q: When my machine reboots, all the collections in /usr/local/depot
+are removed. How do I keep this from happening?
+ <br>A: <i>Package</i> will remove any unspecified files in this directory. To
+protect these files you need to define the directories in your <i>package</i>
+configuration file. For example:
+<pre>
+	D /usr/local/depot/foobie
+</pre>
+ Refer to the package documentation for more details.
+
+ <hr>
+Q: What is the difference between Depot with AFS and Depot without AFS?
+ <br>A: All AFS is used for in Depot is to help determine the last
+modification time of a collection. If AFS support is enabled, then the
+fsi_generate and hintservice programs will query the last modification
+time of the volume and use that to determine whether or not a
+collection has been updated since the last run.
+
+<hr>
+Return to:
+<a href="http://andrew2.andrew.cmu.edu/ANDREWII/AndrewII.html">Andrew
+II Home Page</a> 
+<b>|</b>
+<a href="depot.html">Depot Home Page</a>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+<html><head>
+<title>Changes From Depot Version 4 to Version 5
+</title>
+</head>
+<body>
+<h1>Changes From Depot Version 4 to Version 5</h1>
+<hr>
+
+<ol>
+<li>Files renamed
+<ul>
+	struct.depot -&gt; depot.db
+<br>
+	custom.depot -&gt; depot.pref
+</ul>
+
+ <p>
+<li>Files added
+ <ul> depot.conf - an environment wide depot.conf (this exists in the
+depot sub-directory)
+ </ul>
+
+ <p>
+<li>Defaults changed
+<ul>
+ <li>The default targetdir is now '.' as opposed to '..'.
+Specifically, this means that running depot in the depot subdirectory
+no longer works.
+
+<li>A depot.pref file must exist. Previously depot could run without a
+custom.depot file being present.
+ </ul>
+
+ <p>
+<li>Quick mode is quicker (but less consistent)
+ <ul> If -Q is used, then it does not check the target directory. This
+means that (1) unmapped files aren't removed and (2) invalid links may
+result in depot hanging.
+ </ul>
+
+ <p>
+<li> The command syntax has changed. See the "Using Depot"  for details.
+
+ <p>
+<li> Filters 
+ <ul>
+When installing files from a collection, it used to be
+that you could either copy or link the file. Now, you can pass the
+file through a "filter." For example, you could store all the files in
+a collection as compressed files and the "filter" used to install the
+files would be uncompress. See "Using Depot" for details.
+ </ul>
+
+<p>
+<li> Command line
+<ul>
+Collections to be updated are no longer specified on the command line
+or via the -f switch. All collections specified by the 'path' or
+'searchpath' preference option will be processed.
+</ol>
+
+<hr>
+Return to: <b>|</b>
+<a href="http://andrew2.andrew.cmu.edu/ANDREWII/AndrewII.html">AndrewII Top Level</a>
+<b>|</b>
+<a href="depot.html">Depot Top Level</a>
+<b>|</b>
+</body>
+</html>

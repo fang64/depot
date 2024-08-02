@@ -1,0 +1,593 @@
+Thu Jul  6 09:43:41 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* tools/conv_tools: move this directory from the dpp sources. This
+	directory contains a few perl scripts used to help the conversion
+	from depot v4 to depot v5.
+
+Fri Jun  9 15:58:07 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* configure.in: clean up mkdirheir check
+
+	* created EMT version 021.  Incremented version to 5.13
+
+
+Thu May 11 10:40:52 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/TargetDB/TargetDB_Special.c (TargetDB_ProtectSpecialTargets): 
+	* src/lib/TargetDB/TargetDB_Apply.c (TargetDB_NodeApply): 
+	make updating a special file/directory a warning instead of an error 
+
+	* src/lib/Hint/HintDB_InsertHint.c (HintDB_InsertHint): fix bug
+	where you deleted the previous entry instead of the one you
+	specified.
+
+	* src/cmd/hintservice/Makefile.in: Added codecenter/purify
+	debugging infrastructure
+
+Thu Apr 27 10:06:48 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* depot.conf.man, depot.pref.man: unquote [ as that was confusing
+	man2html. 
+
+	* hintservice.man, fsi_generate.man: install these man pages. 
+
+	* src/lib/FileSystemUtil/AndrewFileSystem.c: Change ifdef from
+	__SVR4 and sun to AFS_SUN5_ENV as older versions of Sun's Solaris
+	C compiler doesn't define __SVR4.
+
+	* created EMT version 020. Incremented version to 5.12
+
+Tue Mar 21 1995 Derrick Brashear
+
+	* src/lib/FileSystemUtil/AndrewFileSystem.c: added include for
+	sys/ioccom.h under Solaris 2 to get _IOW
+
+	* fixed root level configure.in to pick up Solaris libs for
+	AFS build. Fixed mkdirhier to fall back on mkdir -p
+
+Tue Feb 28 17:26:46 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* man/man1/depot.man: Removed erroneous [collection_name]
+	specification in the man page. Thanks to Edward Nicolescu
+	(edward@TC.Cornell.EDU
+
+	* created EMT version 019. Incremented version to 5.11
+
+Fri Feb 17 14:25:44 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Makefile.in (install): Moved depot.conf out
+
+Mon Feb 13 01:39:55 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* acconfig.h; src/lib/util/util.h; src/lib/util/Makefile.in;
+	man/man1/depot.man; src/lib/TargetDB/TargetDB_{Read,Write}.c:
+	Removal of gnu zip code from distribution. Depot now does a
+	fork/exec of an external program to compress the targetdb.
+
+	* src/lib/FileOps/File_Copy.c: rewrote main copying routine so
+	that it is no longer from the gnu distribution.
+
+	* src/lib/FileSystemUtil/Makefile.in: Instead of using a zero
+	length .o to be a filler for LibAFS.o, compile a dummy program.
+
+	* configure.in: rename all the depot autoconf variables to be
+	DEPOT_*; add stuff for removal of compression code; make configure
+	smarter in detecting a lex that is really flex
+
+	* README: Update on gzip removal
+
+Thu Feb  9 13:14:32 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/FileSystemImage/FileSystemImage_Locate.c: improve error
+	messages by providing the name of the collection where errors
+	occur. 
+
+Wed Feb  8 10:10:59 1995  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* src/lib/libgen/version.c (getversion_libdepot): increment to
+	version 5.10
+
+	* Remove CMU copyright from File_Copy.c as it falls under the GNU
+	Public License. 
+	Clean up text in README to indicate that this file and the files
+	in src/lib/gnucompress fall under the GPL. 
+	Include the GPL in the aforementioned directory.
+	Thanks to Larry Greendfield (greenfi@gauss.rutgers.edu) for
+	pointing out this problem.
+	
+
+Thu Feb  2 11:12:37 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Command/Command_Build.c (Command_LocateExecFileInPATH):
+	if stdc_headers aren't defined then chances are good that getenv()
+	isn't being defined. so let's define it.
+
+	* created EMT version 018.
+
+Tue Jan 24 10:25:45 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* incremented version to 5.8
+
+	* tools/makedist: when the sources are extracted, put it into a
+	depot-<version> subdir instead of into the cwd.
+
+Tue Jan 23 10:16:36 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/TargetDB/TargetDB_Delete.c (TargetDB_DeleteTargetPath):
+	Check the right item to see if it is NULL before trying to free
+	it.
+
+Mon Jan 23 14:10:25 1995  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* SMakefile: Update HP compiler optimization switches for the
+	'new' hp compiler.
+
+Fri Dec 23 16:10:26 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* man/man5/depot.pref.man: fixed typo in
+	target.setuid/target.setgid. The text of target.setuid and the
+	following target.setgid line was nuked. 
+
+Tue Dec 20 17:08:37 1994  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* incremeted version to 5.7.1.
+
+	* src/lib/include/depotlib.h: Forgot to update depotlib.h to
+	reflect the autoconf changes for various directory related header
+	inclusion. Thanks to Ryan Troll (ry+@cmu.edu) for reporting this.
+
+	* incremeted version to 5.7. First public release.
+
+	* src/lib/FileOps/File_CreateSymLink.c: Remove target file if
+	error EEXIST is detected and continue on with life.
+
+Fri Dec 16 15:38:11 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Preference/PreferenceDBUtil.c: fix preference
+	specification so that 
+	    collection.installmethod copy *
+	    collection.installmethod link foo
+	works the way one would expect.
+
+        * src/lib/TargetDB_Check.c: check for PROGRAM_ErrorNo after the
+	return of HardLinkSourceToUse to avoid core dumps if an error is
+	triggered in this routine.
+
+	* src/lib/TargetDB/TargetDB_Check.c (HardLink_SourceToUse): Deal
+	with the case where 
+	    collection A: X is a hardlink to Y 
+	    collection B: Y B overrides A 
+	In this scenario, the check would fail since Y (from B) is no
+	longer a hard link. We remove this check. The behavior seems that
+	X will be mapped from A and Y is from B and the hard link stuff is
+	just gone.
+
+Wed Dec 14 10:13:17 1994  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* configure.in: update to use autoconf 2.0; check for vfork to
+	support IRIX.
+	
+	* man pages: update from technical writer
+
+Fri Dec  9 16:46:55 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Depot/Depot_RunMode.c (Depot_RunBuildMode): fix core
+	dump in the event that there are no collections in the
+	environment. 
+
+Thu Dec  8 10:56:21 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* FileSystemImage_Read.c, FileSystemImage_Write.c, file.c:
+	Modified changes to allow filenames with spaces. Changes courtesy
+	Ryan Troll (ry+@cmu.edu).
+
+Tue Dec  6 11:26:06 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/util/misc.c (waitpid): Fix multiple typos in
+	procedure. Fix courtesy Ryan Troll (ry+@cmu.edu). 
+
+	* src/lib/FileOps/File_Move.c (File_Move): Handle the situation
+	where the target is a directory.
+
+	* src/lib/TargetDB/TargetDB_Update.c (TargetDB_LinkFile): Fix
+	update routine to take advangate of 11/8/94 change. Fixed bug in
+	update routine (if block wasn't inclusive enough)
+
+	* src/lib/TargetDB/TargetDB_Update.c (TargetDB_CopyFile): Fix
+	update routine to take advantage of 11/8/94 change. 
+	
+	* created EMT version 017. Increased library version to 5.6
+
+Thu Nov 10 15:17:01 1994  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* src/lib/libgen/version.c (getversion_libdepot): bump version to
+	5.5
+
+	* src/lib/FileOps/File_Copy.c (cp): improve error messages; check
+	the return values from close()
+
+	* src/lib/FileOps/File.h (FSTAT_MODE): Fix constant value for
+	FSTAT_SETUID
+
+	* src/lib/FileOps/File_SetStatus.c: Display chmod action in
+	verbose mode.
+
+	* test/run_delta_mode.pl: Allow environment variables to override
+	default paths for binaries like depot and dpp.
+
+Tue Nov  8 11:41:09 1994  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* src/lib/FileSystemImage/FileSystemImage_Build.c
+	(FileSystemImageNodeFromFileStatus): in non-AFS environments the
+	variable 'linkbuf' wasn't being properly initialization so the
+	FileSystemImage output was being corrupted.  Thanks to Curt Tilmes
+	(curt@ltpsun.gsfc.nasa.gov) for pointing out this bug.
+
+Mon Nov  7 15:53:52 1994  Walter Wong  (ww0r@orca.cc.cmu.edu)
+
+	* tools/install.sh (instcmd): Change install shell script not to
+	remove the source proram.
+
+Thu Nov  3 21:03:20 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/FileOps/File_CreateSymLink.c,
+	src/lib/FileOps/File_Filter.c: Change the copying semanics. Rather
+	than removing the file first, Update to .NEW and then use the
+	atomic rename to put things into place
+
+Wed Nov  2 10:30:27 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/TargetDB/TargetDB_Update.c (TargetDB_CopyFile):  Ensure
+	that bad filestat modes don't get propogated.
+
+Mon Oct 31 08:41:23 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Depot/Depot_RunMode.c (Depot_RunDeltaMode): Give a
+	better error if -Q is used before the depot.db is built.
+
+	* src/lib/Preference/PreferenceDBUtil.c
+	(PreferenceDB_CollectionInstallMethod): get
+	collection.installmethod copy|link * to work
+
+	* src/lib/Collection/Collection_TargetDB.c,
+	* src/lib/Collection/Collection_CommandTarget.c,
+	* src/lib/DepotDB/DepotDB_OpenClose.c: Improve error messages 
+
+Fri Oct 28 14:27:41 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/TargetDB/TargetDB_Delete.c (TargetDB_DeleteTargetPath):
+	In the event a NULL targetdb is passed to this routine, we just
+	return NULL instead of exiting on an error.
+
+	* created EMT version 016. Increased library version to 5.4
+
+Thu Oct 27 16:50:32 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Hint/HintDB_GetHint.c (HintDB_GetHint): fix bug where
+	strncmp should have been made into a strcmp but the 'n' was left
+	in. (e.g. did a strNcmp(A,B))
+
+Tue Oct 25 13:34:09 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Collection/Collection_TargetSourceFromFileStatus.c
+	(Collection_TargetSourceFromFileStatus):  Clean up error messages
+
+	* src/lib/Collection/Collection_DeleteTarget.c: Always use TDB_LAX
+	so ~delete of something that doesn't exist won't crap out and die.
+
+	* src/lib/TargetDB/TargetDBUtil.c (TargetDB_Free): ensure that
+	TARGETDB_Children(targetdbp) is not NULL before trying to free it.
+
+Thu Oct 20 23:42:07 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/libgen/version.c (getversion_libdepot): bump up library
+	version for 5.3 to avoid confusion.
+
+Wed Oct 19 15:29:21 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Created EMT version 015; updated depot library to 1.6
+
+Fri Oct 14 15:16:13 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Depot/Depot_RunMode.c: plug core leak with Hints. 
+
+	* src/lib/TargetDB/TargetDBUtil.c (TargetDB_Free): plug a core
+	leak by remembering to free the targetdb children.
+
+Thu Oct 13 10:16:20 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/TargetDB/SourceList_SortByOverrides.c
+	(SourceList_SortByOverrides): Don't sort items of length 1. This
+	is a pretty big performance win on systems that don't have a good
+	memory allocator (e.g. Ultrix 4.2a)
+
+Wed Oct 12 11:22:01 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Depot/Depot_CollectionUtil.c
+	(Depot_GetCollectionNamesInDirectory): Improve performance of this
+	routine by reducing the calls to stat(2). This was done by not
+	stat'ing if the file is in the hint database or has been added
+	already.
+
+	* src/lib/Hint/HintUtil.c (Hint_Comparator): optimize checking
+	order by first checking the modification date, the unique id and
+	then the path. 
+
+	* src/lib/Hint/HintUtil.c: Add functions HintDB_Dump and Hint_Dump
+	to display the contents of the Hints in the a HintDB
+
+	* src/lib/util/string.c (StringSet_Member): StringSet_Member now
+	returns FALSE if strset is NULL.
+
+	* src/lib/util/file.c: replace erroneous uses of bitwise operator
+	'|' with the boolean '||'
+
+Tue Oct 11 11:31:21 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Preference/Preference_Set.c (Preference_SetSentence):
+	changed multi-character \0x7f to \x7f resulting the desired
+	behavior of specifying a single character. Fix courtesy John Myers
+	(jgm+@cmu.edu).
+
+Mon Oct 10 17:02:44 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+
+	* multiple src files: add preference (and long option) of
+	'compresstargetdb' to allow the targetdb to control whether or not
+	the targetdb should be compressed.
+
+	* src/cmd/depot/depot.c: boolean options should be TRUE/FALSE and
+	not YES/NO
+
+Sat Oct  8 21:36:44 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/cmd/depot.c: Fix long option parsing to actually work right.
+
+	* Creation of EMT version 014; up'd depot library version to 1.5
+
+Thu Oct  6 14:51:08 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* tests/run_delta_test.pl: added perl script to go through and
+	test -Q
+
+	* src/cmd/depot/depot.c,
+	* src/lib/Depot/Depot_RunMode.c,
+	* src/lib/Depot/Depot.h: Replace command line options -t and -F in
+	favor of --usemodtimes=YES/NO. Add command line option
+	--keepcopiedfileattributes=YES/NO. 
+
+	* src/lib/TargetDB/TargetDB_Check.c (TargetDB_CheckLinkFile), 
+	* src/lib/TargetDB/SourceList_Prune.c: As things are pruned from
+	the source list 'cause they no longer exist, we remove U_TARGET
+	from the other source list entries so indicate that the current
+	links may no longer be valid.
+
+	In TargetDB_Check.c, TargetDB_CheckLinkFile will now catch this
+	change when it checks for differences between the source's
+	UpdateSpec and OldUpdateSpec.
+
+
+Fri Sep 30 14:13:49 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/Depot/Depot_RunMode.c: Added LOG_DEPOTDB to dump the
+	depotdb (actually it is just the targetdb) for debugging purposes.
+
+	* src/lib/TargetDB/TargetDB_Update.c (TargetDB_CopyFile): add the 
+	option to allow files to copied with the exact
+	owner/group/mode. Note that the way this is done is rather
+	inefficient, but I can't figure out how to it the efficient way
+	(e.g. loading the information from the fs image into the TargetDB in
+	the first place ... )
+
+
+	* fix bug 940912-002: configure.in: flex, if used, will be invoked
+	with the -l flag. Change courtesy John Myers (jgm+@cmu.edu)
+
+	* src/lib/Preference/Preference.h, src/lib/Preference/PreferenceUtil.c
+	* src/lib/Preference/Preference_Lookup.c,
+	* src/lib/Preference/Preference_Write.c: Add a PREF_INTERNAL flag
+	to signify that a preference option should not be written out by
+	PreferenceDB_Write (such as the DEPOT_INTERNAL preference option
+	used by the filter implementation.
+
+	* src/lib/Preference/PreferenceDBUtil.c (PreferenceDB_Override):
+	Bitch and die if there is a circular override is detected. 
+
+Wed Sep 28 10:34:04 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* fix bug 940909-001: src/lib/FileOps/File_Filter.c (run_filter):
+	If the output file cannot be opened because of EACCES or ETXTBSY
+	then it'll try to remove (rename) the file and then open it again.
+
+	* src/lib/util/file.c, src/lib/Collection/Collection_PathMap.c
+	(Collection_PathMap): Clean up and provide more informative error
+	messages.
+
+Tue Sep 27 10:18:45 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/lib/FileOps/File_Copy.c (cp): remove call to fstat() to
+	determine the "optimal block size"; just use 8k as that's probably
+	either the optimal size or good enough (for now).
+
+	* src/lib/FileOps/File_Copy.c (cp): Remove hole copying feature as
+	many OS' can't deal with holey executables. 
+
+	* fix bug: make -U to really unlock if at all possible. 
+
+Fri Sep 16 10:42:58 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Incremented library version to 1.4.
+
+Mon Sep 12 11:41:30 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Incremented library version to 1.3. Releasing emt version 012. 
+
+	* linux port: src/lib/FileSystemImage/FileSystemImage_Build.c
+	(FileSystemImageNodeFromFileStatus): Change MAXBSIZE constant to
+	MAXPATHLEN. Change courtesy John Myers (jgm+@cmu.edu)
+
+Fri Sep  9 08:17:17 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* code cleanup: Depot_CollectionUtil.c: use HintDB_Free, reduce
+	the number of string allocations and copying
+
+	* plug core leaks: Implement HintDB_Free and Hint_Free in
+	HintUtil.c
+
+	* plug core leaks:TargetDB_Read, HintDB_InsertHint
+
+Wed Sep  7 03:45:33 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Add support for NeXT, changes courtesy Ryan Troll
+	(ry+@.cmu.edu) (though the autoconf changes to mimic his
+	changes are my fault). 
+	
+	* Misc bug fixes (using NULL where I should have been using
+	E_NULL), changes courtesy Ryan Troll.
+
+	* fix bug src/lib/TargetDB/TargetDB_SortByOverrides.c
+	(TargetDB_TreeSortByOverrides):  If a file was mapped by the
+	collection depot.conf, and a new collection was added which had
+	a file that conflicted with the depot.conf mapping in the first
+	collection, then a conflict would occur, even with an
+	override. This was fixed by not assuming sorted order in the
+	module above.
+
+	* cross platform support: TargetDB_{Read,Write}.c: The updatespec
+	variable should be saved to the database file after being
+	converted to network byte order and read from the database in host
+	byte order.
+
+	* minor clean up: File_RemovePath and File_Move were comparing
+	PROGRAM_ErrorNo against NULL instead of E_NULL; discard uncessary
+	casts in Depot_RunMode
+
+Tue Sep  6 11:11:39 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* fix core leak: src/lib/util/string.c (StringSet_Merge): this
+	also changes the behavior of stringset merge so that it doesn't
+	allocate a new stringset and return it. Instead, it modifies the
+	first parameter. 
+
+Mon Sep  5 00:46:17 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* src/cmd/depot/M.saber: Allow easier loading of depot into
+	Codecenter. Namely, bypass loading the .c's of yacc/lex files and
+	just load the .o's for those.
+
+	* Fix 940904-002: src/lib/DepotConf/DepotConfUtil.c
+	(DepotConfDB_Comparator): The comparitor now correctly checks for
+	the case where one of the the databases being compared could be
+	allocated for but not point to anything.
+
+Sat Sep  3 01:24:37 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Misc cleanups - remove unused variables; remove unused
+	procedures.
+
+Fri Sep  2 15:44:25 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Fix ETXTBSY errors. Namely, the previous scheme would keep
+	renaming a file until MAXPATHLEN was filled up. Now, it won't
+	rename the file if it has -BUSYFILE appended to the end of it. 
+
+Wed Aug 31 13:56:48 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Fix 940831-001: TargetDB_SetFileStatus.c now allows
+	target.{owner,group,setuid,setgid} to overlap each other. However,
+	with 100% overlap can occur and no warning is currently given.
+
+	* misc code cleanup in locking code
+
+Tue Aug 30 09:09:37 1994  Walter Wong  (ww0r@yendi.cc.cmu.edu)
+
+	* Fix 940518-005: TargetDB_SetFileStatus.c now has 'target.setuid'
+	override instances of 'target.owner'
+
+	* Add -F, -t switches to force modtimes and usemodtimes
+	respectively. 
+
+	* Added timing instrumentation to Depot_RunMode.c. Enable with LOG_TIME
+
+	* Conversion to use ChangeLog format. Old changelog included
+	below. 
+
+	* remove version.c from RCS control; will manually increment 
+	the version numbers from now on.; logging of changes is now
+	switched to this file and this format.
+
+---------------------------------------------------------------------------------
+011:
+COMPILATION:
+	- make autoconf variables more standardized.
+
+PORTABILITY:
+	- get rid of non POSIX code wherever possible (e.g. since
+	  POSIX doesn't support symlinks, we can't be fully posix 
+ 	  compliant). 
+	- change short's to ints in a number of places (e.g. number of
+	  collections)  
+
+FIXES:
+	- misc fixes. See bt database for details
+
+CORE LEAK:
+	- plugged about 2 meg worth of core leaks
+	- pluuged major core leak which occured with 'override *' in
+	  PreferenceDB_Override  
+
+ENCHANCEMENTS:
+	- Rob's filter additions
+	- Rewrote the locking code (kept thesame API). The old locking
+	  code was confusing and duplicated alot of stuff.
+	- For Preference_GetStringArray and Preference_GetStringSet,
+	  added an extra parameter to indicate that it is not necessary
+	  to allocate memory, copy the string data and return
+	  that. This provided a significant performance boost in
+	  conflict checking.
+	- added -V for full verbosity. -v will show only actions
+	  performed on the target directory and some other minor stuff
+	- add -Q to run in delta mode. WARNING: This mode has not been
+	  fully tested yet!
+
+--------------------------------------------------------------------------------
+010: 
+COMPILATION:
+	- remove interface directory; merge with lib to avoid having
+	  to maintain multiple src files.
+	- allow building gnu-autoconf
+	- handle wait's status value as either union wait (BSD) or int
+	  wait (POSIX)
+
+RESTRUCTURE:
+	- Move the static error array into Error.c and thereby avoid
+	  including it in every object file.
+	- change static char * rcs headers in .h files to comments 
+	  in order to cut down on size of object files
+	- convert clients in cmd to use the 'interface' DepotDB include files
+
+PORTABILITY:
+	- change references of index/rindex to strchr/strrchr for
+	  posix conformance
+	- use posix typedefs (uid_t, gid_t) 
+	
+FIXES:
+	- ctime missing & bug (reported by Silvers)
+	- detection and handling of busy files (reported by Silvers)
+	- apply disallow external references patch from Sohan
+	- Conflicting collections now names collection (reported by Orlow and
+		 Silvers)
+	- Changed FSTAT_SETGID and FSTAT_SETUID to be different values (reported 
+		by Silvers) 
+
+CORE LEAK:
+	(multiple fixes)
+
+ENCHANCEMENTS:
+	- change FatalError to include filename and line number.
+	
+(additional changes and bugfixes noted in bt database)
+
+
+	
+

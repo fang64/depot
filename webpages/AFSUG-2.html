@@ -1,0 +1,653 @@
+<html>
+<head>
+<title>Software Management in the Andrew System</title>
+</head>
+<body>
+<h1>Software Management in the Andrew System</h1>
+<address>
+May 20, 1992<br><br>
+Wallace Colyer<br>
+Mark Held<br>
+David Markley<br>
+Walter Wong<br>
+<i>Computing &amp; Communications<br>
+Carnegie Mellon University<br>
+Pittsburgh, PA 15213-3890</i></address>
+<hr><h2>Table of Contents</h2>
+<a href="AFSUG-2.fm.html#HDT0"><b>Software Management in the Andrew System</b></a>
+
+<ul>
+<a href="AFSUG-2.fm.html#HDR10"><b>Abstract</b></a><br>
+<a href="AFSUG-2.fm.html#HDR11"><b>Introduction</b></a><br>
+<a href="AFSUG-2.fm.html#HDR1"><b>Depot</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR2"><b>Volume Naming and Tree Organization</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR3"><b>Software Creation and Release</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR4"><b>Environment Maintenance Tool</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR5"><b>Evaluation</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR6"><b>Conclusion</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR7"><b>Acknowledgments</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR8"><b>Availability</b></a>
+<br>
+
+<a href="AFSUG-2.fm.html#HDR9"><b>References</b></a>
+</ul>
+
+
+<hr><!-- This file was created with the fm2html filter.The filter is copyright Norwegian Telecom Research and was programmed by Jon Stephenson von Tetzchner.  -->
+<h1><a name="HDT0">Software Management in the Andrew System</a></h1>
+<h2><a name="HDR10">Abstract</a></h2>
+
+<unknown>The Andrew system began as a research project which matured
+into the primary campus computing system at Carnegie Mellon
+University. During this process, problems were encountered with the
+procedures for testing and releasing third party and locally developed
+software. The standard UNIX /usr/local model of software management
+became too expensive and cumbersome to maintain. Even though the
+system was built on <i>AFS</i>, it was not taking advantage of
+<i>AFS</i>' features to assist with the software management
+process.</unknown><br>
+
+<unknown>A set of tools and methodologies emerged which exploit the
+management features available through <i>AFS</i>. Though the system
+had been progressing in its absence, the first major tool developed
+was <i>depot</i>, which allows modular management of software
+collections. Tree structure and volume naming conventions were created
+to take advantage of the modular collections which allow software to
+flow through the development process from creation until deletion. The
+Environment Management Tool (<i>EMT</i>) was written to automate this
+entire process. These tools and practices have not only reduced the
+time and effort required to install, remove, release and upgrade
+software in the system, but have also given us the means to provide
+stability and reliability for users and developers.</unknown><br>
+
+<h2><a name="HDR11">Introduction</a></h2>
+
+The Andrew system began with a small technical user community
+consisting of filesystem and application developers. System
+administration tasks, such as software installation, were done by
+these people who had detailed technical knowledge of the system. Third
+party and locally developed software was installed following the
+standard UNIX /usr/local model where the sources are stored in some
+&quot;well known&quot; location, compiled, and installed directly into
+/usr/local. No significant problems with software management arose at
+this time due to the technical expertise of the user community and the
+fact that the body of supported software was still small.<p>
+
+As the system continued to grow, management of /usr/local became
+significantly more complex. The problem was compounded when groups
+with less institutional knowledge began participating in the software
+management process. Things became increasingly complicated: at one
+time there were up to four different /usr/local trees, all of which
+followed the standard UNIX philosophy of installing software directly
+into the tree. <p>
+
+More problems emerged as a result of growth. The installation process
+could overwrite files of one software package with those of
+another. Upgrading a software package could leave files from the old
+version in the environment. Trying to remove software could either
+fail to remove all of the software package or worse, actually remove
+files installed by other collections. Testing either involved copying
+entire environments or simply hoping that no interaction problems
+would occur.<p>
+
+Some features of <i>AFS</i> [Saty85] allowed the system to continue to
+exist in this disorganized fashion. Replication allowed software to be
+installed into the read-write volumes and errors worked out before
+releasing these volumes. The backup volume allowed a quick and
+complete restoration to a previous state if catastrophic errors were
+detected. <p>
+
+The growing size of /usr/local began to defeat the purpose of
+<i>AFS</i> volumes [Side86]. In order to best use the management
+features of volumes, they must be small and used in a modular
+manner. The colossal /usr/local fails to meet either of these
+criteria. A straightforward decomposition of /usr/local divides it at
+the directory level, but that is not always sufficient because
+directories, such as /usr/local/bin, can easily become extremely
+large. Eventually the usage of <i>AFS</i> became analogous to using a
+sports car to deliver produce: there is a considerable amount of
+power, but it is not being optimally used. <p>
+
+The first goal was to find a more suitable model for managing
+/usr/local. That goal was achieved by<i> depot</i> [Coly92] which
+provides a simple, yet flexible, method for structuring the software
+management process. <i>Depot</i> separates the software into
+collections, or independent directory hierarchies, where each
+collection is given its own <i>AFS</i> volume. To take advantage of
+this new framework, new volume and tree naming conventions were
+adopted.<p>
+
+After using this system, it became apparent that further automation
+was not only possible but quite desirable. With multiple supported
+system types and multiple trees with multiple environments,<a href="AFSUG-2.fm.html#FN1">(1)</a> many man hours were wasted and
+accidental errors were introduced as all the necessary actions were
+performed. <i>EMT</i>, the Environment Maintenance Tool, was written
+to automate the entire process. <i>EMT</i> controls the creation,
+deletion, and release of software volumes to all the trees.<p> <h2><a name="HDR1">Depot</a></h2>
+
+<i>Depot</i> addresses the problem of system software by providing a
+framework that separates each software package into its own directory
+hierarchy. <i>Depot</i>, when run, integrates the collections into a
+single user-visible environment, such as /usr/local. <p>
+
+This separation provides stability and accountability. Interaction
+problems are avoided. A new file cannot overwrite the file of another
+package since they are installed into separate directory
+hierarchies. By the same token, deinstillation will not remove any
+files other than those associated with the package that is being
+removed. This organization allows one to effectively determine, if a
+problem is discovered with a certain file, to which collection that
+file belongs. This division provides a way to compartmentalize access
+to an environment. Access control lists can be used to give developers
+the freedom to modify only these collections. Access is not granted
+any other part of the tree. <p>
+
+This separation captures benefits of <i>AFS</i> volumes. By storing
+each collection in its own volume, replication is more
+efficient. Highly used collections may be replicated numerous
+times. Less frequently used packages can be replicated fewer times or
+not at all. The smaller size of the volumes facilitates moving the
+volumes from server to server and provides a convenient method for
+backup and restoration. While giving each software package its own
+volume doesn't guarantee that the volume will be small, it is a
+logical decomposition and keeps the average volume size at an
+acceptable level. <p>
+
+In addition to the separation of software collections, <i>depot</i>
+integrates software packages into a single directory hierarchy. If
+errors are detected during the integration process, <i>depot</i> will
+exit with an appropriate message. The most common problem is a
+<i>conflict</i>, when two collections export their files to the same
+file. In order to resolve the conflict, the environment maintainer may
+either give precedence to one collection or reorganize the collections
+so that the conflict no longer arises. More information about conflict
+resolution may be found in the <i>depot</i> documentation.<p>
+
+<i>Depot</i> provides a testing and release system. With a minimal
+amount of wasted disk space, it is possible to create environments
+which duplicates the released environment. Application software can be
+seamlessly merged into the production environment for testing. This is
+done using configuration files. When the developer is satisfied with
+the robustness of the application, the environment maintainer may take
+that collection and integrate it into the released environments. This
+procedure simply removes a mount point, mounts the newer collection,
+and runs <i>depot</i>. If there is an unforeseen problem, backing out
+and restoring the environment to its previous working state can be
+accomplished by using the same process. In this instance, the old
+volume would be mounted instead of the newer volume.<p>
+
+Collection based software management can be extended to increase
+availability and performance of software on the local disk of a
+workstation. <i>Depot</i> has configuration options which allow files
+to be either copied or linked. Important files or collections may be
+copied to the local disk while other files may be referenced by
+symbolic links to the <i>AFS</i> collections. Similarly, workstation
+owners may customize their environment by incorporating privately
+provided and maintained applications with collections located in a
+centrally maintained environment.<p>
+
+Another feature of <i>depot</i> is that it can be used to manage
+multiple environments. Three trees are currently supported with
+<i>depot</i>: /usr/local, /usr/contributed, and the &quot;host&quot;
+tree. /usr/local contains the supported system and application
+software. /usr/contributed stores useful software that is provided and
+supported by the user community. The &quot;host&quot; tree is for
+system services, whose developers rely on the release control that
+<i>depot</i> provides, such as &quot;post office&quot; machines.<p>
+
+Future work on <i>depot</i> will concentrate on improving it as a
+workstation configuration and management tool. The objective is to
+extend <i>depot</i> to where it can update the entire operating system
+of a workstation. The major release, and each following minor release,
+of the operating system would be a collection. Every layered product
+of the operating system products would also reside in
+collections. This organization would simplify installation, update,
+and removal much easier. Modifications to a configuration, and
+customizations would be done by adding or modifying collections that
+had precedence over system or vendor defaults. This use of
+<i>depot</i> is expected to be more flexible and understandable system
+than <i>package</i> [Youn85], the tool currently used. The complicated
+configuration files of <i>package</i> would be a thing of the
+past. <i>Depot</i> can currently perform many of the tasks needed for
+this work, although it is lacking in some areas. <i>Depot</i> must be
+significantly faster, and able to handle some of the issues already
+addressed by <i>package</i>, such as UNIX modes and devices.<p>
+
+<h2><a name="HDR2">Volume Naming and Tree Organization</a></h2>
+<i>Depot</i> provides a foundation from which one can proceeds. It
+offers many choices of how to configure the environment. Our strategy
+attempts to use naming conventions and to organize the tree structure
+in order to maximize the benefits of <i>AFS</i> and offer a consistent
+pathway to the software for both users and developers. [Held92]<p>
+
+The naming conventions establish an association between the contents
+of that volume and a specific version of a particular application. To
+facilitate this association, volume names for system software are
+divided into three parts separated by periods:<p>
+
+identifier.name.version<p>
+
+The identifier describes what type of volume it is. The possible
+identifiers include: <b>arc</b>, <b>src</b>, <b>@sys</b>,<a href="AFSUG-2.fm.html#FN2">(2)</a> .<b>@sys</b>, and
+<b>common</b>. <p>
+
+The <b>arc</b> volumes contain archives of software distributions
+exactly as received from the vendor for on-line reference. The
+contents of the <b>arc</b> volumes are never modified. Nevertheless,
+typically there are modifications to the software shipped by vendors
+prior to installation.<p>
+
+<b>src</b> volumes contain source code or binary vendor
+distributions. Local modifications to vendor supplied software are
+made in the appropriate <b>src</b> volume. Every software package has
+a <b>src</b> volume, but only &quot;important&quot; collections have
+<b>arc</b> volumes.<p>
+
+The volumes with an <b>@sys</b> identifier house the files which are
+ready to be installed into the system by <i>depot</i>. These volumes
+are called <b>dest</b>, for &quot;destination,&quot; volumes, as they
+are the place into which &quot;make install&quot; copies files. <p>
+
+The <b>.@sys</b> volumes are <i>object</i> volumes, which are used
+during the process of compiling software. In most instances,
+intermediate object files are not stored in <i>AFS</i>, but on the
+local drive of some workstation. Occasionally there is a need to store
+object files in <i>AFS</i> such as when recompilation would be both a
+likely and cumbersome task. Another reason would be to retain an
+unstripped binary image for debugging purposes.<p>
+
+The <b>common</b> volumes store the files associated with some
+software distribution which are not architecture
+specific. <b>common</b> volumes are neither needed nor desirable in
+every case. There is a balance between the convenience for the
+developer of not having another volume, and the savings in disk space
+by using a <b>common</b> volume. When appropriate, sharable files can
+be installed into a <b>common</b> volume which is mounted under every
+supported <b>dest</b> volume of that collection.<p>
+
+The second field, <b>name</b>, is the name of the application. The
+name must be no longer than nine characters due to limits in the
+maximum <i>AFS</i> volume name length. The name does not change from
+version to version, and must be unique from all other existing name
+fields.<p>
+
+The final field, <b>version</b> is known as the <i>version tag</i>. It
+is a three-character field which associates related sets of volumes to
+each another. This field is treated as an ever increasing base 36
+three digit number. If a binary is installed in a <b>dest</b> volume
+with a certain version tag, then that binary was created by sources in
+the <b>src</b> volume with the same version tag. These version tags
+are purposefully not related to any vendor provided version number,
+and are simply used for software management. <p>
+
+The other set of naming conventions are found in the trees in which
+these volumes are mounted. This part is easiest to describe by using
+an example. In every example, &quot;...&quot; will be used as an
+abbreviation for the path
+&quot;/afs/andrew.cmu.edu/system&quot;. Suppose we have an application
+named <i>gnu-emacs</i>. There are four versions of <i>gnu-emacs</i>
+available on-line: 013, 014, 016, and 017. This application is
+installed in /usr/local with version 014 installed in the gamma, or
+released tree, and 016 in the beta or test tree. The sources for
+<i>gnu-emacs</i> can be found in:<p>
+
+.../src/local/gnu-emacs/{013,014,016,017}<a href="AFSUG-2.fm.html#FN3">(3)</a><p>
+
+where the volumes <b>src.gnu-emacs.{013,014,016,017}</b> are mounted
+respectively. Note that the volumes are mounted by the version tag
+under a directory which is the <b>name</b> of the application. <p>
+
+<i>AFS</i> object volumes are mounted as:<p>
+.../obj/@sys/local/gnuemacs/{013,014,016,017}<p>
+Again, the volumes are mounted by the version tag. <p>
+
+The <b>dest</b> volumes associated with each <b>src</b> version, are
+located in:<p>
+
+.../dest/@sys/local/gnuemacs/{013,014,016,017}<p>
+
+Once more, the mount point is by the version tag. In each of the three
+cases, the last three path elements are identical and contain both the
+name of the application and the version tag.<p>
+
+This tree organization allows the software building process to take
+the last three elements in the path to the top level of the source,
+and use those path elements to install into the correct destination
+volume. The mount points in the <b>dest</b> tree will remain, as long
+as that version of the software is on-line, independent of whether the
+software in question is installed in an environment. <p>
+
+When a collection is released to an environment, the <b>dest</b>
+volumes are mounted in a specific location. For example, if version
+014 of <i>gnu-emacs</i> has been released to the gamma environment,
+the <b>@sys.gnu-emacs.014</b> volume is mounted as:<p>
+
+.../gamma/@sys/local/depot/gnu-emacs<p> 
+
+Note that in a released
+environment, the volume is mounted by the <b>name</b> element rather
+than the version tag. Similarly, if version 016 has been released to
+the beta environment, the volume named <b>@sys.gnu-emacs.016</b> is
+mounted as:<p>
+
+.../beta/@sys/local/depot/gnu-emacs<p>
+
+Individual workstations either link /usr/local to .../beta/@sys/local
+to access the test tree or to .../gamma/@sys/local to use the
+production tree. Multiple mountpoints for a single volume allow for
+separate production and test trees without requiring a great deal of
+excess disk space. Essentially the beta and gamma trees differ only as
+much as those applications which are actually being tested. The beta
+environment is considered to be stable. To test volatile software,
+developers create an &quot;alpha&quot; environment on their personal
+workstation using <i>depot</i>.<p>
+
+<h2><a name="HDR3">Software Creation and Release</a></h2>
+To create a new version, the following actions occur:<p>
+<ul>
+<li>   create a new <b>src</b> volume with the version tag incremented</unknown><br>
+<li>   copy the previous <b>src</b> volume to the new version, if requested</unknown><br>
+<li>   mount the new <b>src</b> volume in the correct place</unknown><br>
+<li>   create and mount new object volumes, if requested</unknown><br>
+<li>   create a new set of <b>dest</b> volumes, and mount them in the correct places</unknown><br>
+<li>   set the access lists on the new volumes so the developers and the environment maintainer have full access</unknown>
+</ul>
+To release a collection, the following operations are performed:<p>
+<ul>
+<li>   unmount the version of the application currently installed</unknown><br>
+<li>   mount the new version of the application</unknown><br>
+<li>   run <i>depot</i> </unknown><br>
+<li>   modify the access control lists on the <b>src</b> and <b>dest</b> volumes so the developers cannot modify them</unknown><br>
+<li>   replicate and release the <b>dest</b> volumes, if necessary</unknown><br>
+<li>   release the top-level volume of the environment, if necessary</unknown></ul>
+
+The back out process is merely a release of an older volume to an
+environment. To delete a collection the process is the same as a
+release, except a new version is not mounted.<p>
+
+In addition to these tasks, records have to be kept of the changes to
+the environment. The entire process can easily become tedious, error
+prone, and time consuming for the environment maintainer as the
+environment increases in size.<p>
+
+<h2><a name="HDR4">Environment Maintenance Tool</a></h2>
+
+One way to address this problem would be to build the necessary
+&quot;intelligence&quot; into <i>depot</i>. However, this solution
+would introduce unnecessary system specific knowledge to <i>depot</i>,
+making it much more complex and generally less useful. In order to
+avoid this situation, the Environment Maintenance Tool, <i>EMT</i>,
+performs the work needed to maintain the environment<i> </i>and<i>
+</i>runs <i>depot</i> at the appropriate time in the process.<p>
+
+<i>EMT</i> was designed to aid the environment maintainer, or
+gatekeeper, in the tasks of creation, deletion, and release. Depending
+upon the situation, there would either be single or multiple
+gatekeepers. Gatekeeper duty could be delegated to different people
+for different environments. It could be configured in such a way that
+a gatekeeper would be the only person who could do anything to the
+environment, or certain tasks could be delegated to individual
+developers. <p>
+
+While this has not become a reality in our system, <i>EMT</i> was
+designed so the application developer would be able to create new
+versions of their software packages, thereby reducing the workload of
+the gatekeeper. Additional access in release and deletion could be
+granted to developers if desired. In either case, any operation on the
+environment is initiated and handled through <i>EMT</i>.<p>
+
+Allowing <i>EMT</i> to control the environment has several
+advantages. First, it reduces the time required by the gatekeeper to
+do the operations. For example, multiple volume operations or a group
+of commands, that need to be run in order to create, delete or release
+a collection, are collapsed into a single command. This single command
+can include operations for multiple architectures. <p>
+
+<i>EMT</i> reduces the need for privileged accounts since all of the
+operations requiring system administrator access are handled by an
+interface to <i>ADM</i> [Vanr91]. The <i>EMT</i> server verifies that
+the gatekeeper has the proper authentication and authorization for the
+requested operation. All authentication is done using
+<i>Kerberos</i>. [Stei88]<p>
+
+<i>EMT</i> enforces the tree structure and volume naming
+conventions. The environment maintainer cannot violate the naming
+scheme. System administrators can tailor the configuration files to
+match their individual environments.<p>
+
+It should be simple to incorporate <i>EMT</i> into any system. The
+policies and configurations are specified through configuration
+files. The <i>EMT</i> server reads the configuration files on start-up
+and sends each client a copy upon connection. The client uses this
+information to verify the user's commands before making requests to
+the server. Currently, changes to the configuration file require the
+server to be restarted. This is done for the sake of simplicity, since
+a dynamically changing configuration would require all clients to be
+informed of the changes, and current user commands might be invalid
+under the new configuration.<p>
+
+<i>EMT</i>'s server was originally designed to handle all the tasks
+requiring super-user access on its own. Since most of these tasks
+already sent to an <i>ADM</i> server, in the future, <i>EMT</i> might
+simply become an <i>ADM</i> client. All the functionality of the
+<i>EMT</i> server would be built onto <i>ADM</i> through the
+<i>Scheme</i> command language interface. <p>
+
+<h2><a name="HDR5">Evaluation</a></h2>
+
+Presently a single developer performs the role of the gatekeeper for
+/usr/local and the &quot;host&quot; tree. It is envisioned that when
+<i>EMT</i> and the associated processes are fully mature the
+gatekeeper will not have to be a developer or even be technically
+astute. To support a development staff that request about 20 new
+versions of software collections and 20 releases a week, the
+gatekeeper presently invests about five hours a week. <p>
+
+The Andrew System provides access to software contributed and
+supported by students, staff and faculty in a tree called
+/usr/contributed. The gatekeeper duties for the /usr/contributed set
+of software is handled by a student. Because <i>EMT</i> uses
+<i>ADM</i> to handle administrative tasks, the student does not need
+to have a<i> </i>privileged<i> AFS</i> authentication instance.<p>
+
+Software migrates through the system in a cycle: creation, testing,
+releasing, removal, and finally archival and deletion. Since access is
+removed to the developer when software is released to an environment,
+there is a guarantee that software can't change after a release. This
+control is important in ensuring stability across all
+environments. This control also gives the knowledge of which sources
+generated the released binaries.<p>
+
+Developers who need to test their software before a release can run
+<i>depot</i> on the local drive of their workstation to create a
+private /usr/local which can be used for preliminary testing. Because
+of the flexibility of <i>depot</i> and <i>EMT</i>, any number of
+environments can be created and maintained either in <i>AFS</i> or on
+any UNIX file system.<p>
+
+To request a new version, a release, or a deletion of an old version,
+developers send a request to a bboard. There are required elements for
+each request, such as a reason for each release and a listing of
+differences of this software from the previous version. Releases to
+the production environments are delayed for three working days so that
+any potential impact of that release on the overall software
+environment can be assessed. A release can be delayed beyond that time
+if problems are discovered or further study is needed. Releases to the
+beta environments are not put through this review process. <p>
+
+There is an arbitrary limit to the number of versions of any
+particular piece of software allowed to exist concurrently
+on-line. This limit encourages developers to archive and delete
+obsolete versions. In this way, disk usage is controlled while
+flexibility is retained. <p>
+
+This system has provided a firm measure of control of the release
+process, and some aspects of development support such as the
+allocation of disk space. Other problems such as configuration
+management will be addressed with the next release. The plan is to
+mount the application in an environment by a combination of
+&quot;name&quot; and a timestamp. This information will also be
+recorded in a database. The database will be parsable by tools which
+can quickly determine what was in an environment at any instant in
+time, what is different between beta and gamma, when certain releases
+took place, and so on. <p>
+
+In addition to the timestamp, the old versions of a collection are not
+unmounted in order to provide a measure of stability for users who run
+<i>depot</i> to create an environment on the local disk of their
+workstation. By having unique mount points for each version, any
+symbolic links from the local disk of the workstations to an
+<i>AFS</i> environment will remain valid even if a new version of the
+software is released. The old mountpoints will continue to exist in
+<i>AFS</i> for a period of time so that the local disk <i>depot</i>
+users have an opportunity to update their environment. Under this
+situation, the system is configured such that <i>depot</i>
+&quot;understands&quot; that the highest timestamp represents the
+&quot;latest&quot; version. After a certain period of time, a daemon
+will remove the unused mountpoints. <p>
+
+The current system does not provide real development support. Any
+dependencies between collections must be known and maintained manually
+by the developer. Collaborative development efforts must be
+coordinated among the group members through some mechanism outside the
+scope of the current system. Nevertheless, any source code control
+method, such as <i>RCS</i> [Tich90], can be used in each <b>src</b>
+volume. By using the copying mechanism in <i>EMT,</i> the source code
+history can span multiple versions. The path strings in the headers
+will only be accurate for the current version as the <b>src</b>
+volumes are mounted by version tag. Any external dependencies required
+by a software package outside of /usr/local must be handled by the
+gatekeeper and any such information is anecdotal. Very large
+applications, such as the Andrew Tool Kit (<i>ATK</i>), would work
+better in this system if they could be divided into separate volumes
+but there is no easy way to do this. Finally, there are some
+performance issues raised by the large number of volumes generated by
+this management scheme. Many problems have already been fixed in the
+current <i>AFS</i> 3.1 release, but some issues, such as the volume
+cache, may need to be addressed by other sites.<p>
+
+<h2><a name="HDR6">Conclusion</a></h2>
+
+The work described arose from a clearly defined set of needs by the
+administrators of the Andrew<i> AFS</i> installation at Carnegie
+Mellon University. To a large extent, the development was done by the
+&quot;rapid prototype&quot; method since there was an immediate need
+for some sort of tool which could handle tasks that often seemed
+overwhelming. Many of the early decisions were incorrect and
+subsequent development produced better tools and practices.<p>
+
+We now have a system which provides release control in a relatively
+large distributed heterogeneous environment. The system was designed
+to provide some measure of development support, and will provide
+complete support for all types of software development. We have been
+out of &quot;crisis mode&quot; with respect to these aspects of
+software management for only a year or so. The next set of efforts
+will be, we hope, better planned and executed with less stress. <p>
+
+<h2><a name="HDR7">Acknowledgments</a></h2>
+
+Without the considerable work done by a large number of people this
+system would not have been possible. Many more people were influential
+in the creation of <i>depot</i> and the software management procedures
+along side it.<p>
+
+The process began in 1988, when <i>depot</i> was born during a set of
+software management brain storming sessions attended by Wallace
+Colyer, Mark Held, Mike Meyer, Ted McCabe, and David VanRyzin. There
+were many useful insights gained from previous software management
+strategies developed in conjunction with the Information Technology
+Center (ITC) and groups within the Academic Services division at
+Carnegie Mellon University. Mike Accetta and other members of the
+School of Computer Science were very helpful during our initial
+consultations in explaining the strengths and weaknesses of their
+/usr/misc software management system. <p>
+
+We wish to thank Dawn Neuhart for helping out once again in the
+writing process.<p>
+
+<i>AFS</i> is a registered trademark of Transarc Corporation.<p>
+UNIX is a trademark of AT&amp;T.<p>
+
+<h2><a name="HDR8">Availability</a></h2>
+
+<i>Depot</i> and<i> ADM </i>are<i> </i>available via anonymous ftp
+from:<p>
+
+export.acs.cmu.edu [128.2.35.66]<p>
+
+Questions or comments about <i>depot</i> may be sent to
+depot+@andrew.cmu.edu. <i>Depot</i> is available in the /pub/depot
+directory.<p>
+
+Any questions or comments regarding <i>ADM</i> may be sent to
+infoadm@andrew.cmu.edu. <i>ADM</i> is located in the /pub/adm
+directory.<p>
+
+<i>EMT</i> is not available for distribution yet, though it should be
+ready in a very short time.<p>
+
+<h2><a name="HDR9">References</a></h2>
+<dl>
+
+<unknown><dt><a name="[Coly92]">[Coly92]
+<dd>Colyer, Wallace, and Wong, Walter. <i>Depot: A Tool
+for Managing Software Environments</i>. Computing &amp;
+Communications. Carnegie Mellon University. 1992. Available via
+anonymous ftp at export.acs.cmu.edu (128.2.35.66) in the /pub/depot
+directory.</unknown><br>
+
+<unknown><dt><a name="[Held92]">[Held92]
+<dd>Held, Mark. <i>Software Management in the Andrew
+Distributed UNIX System at CMU.</i> Computing &amp; Communications,
+Carnegie Mellon University. 1992. Available through <i>AFS</i> in the
+directory: /afs/andrew.cmu.edu/acs/asg/doc/software.</unknown><br>
+
+<unknown><dt><a name="[Saty85]">[Saty85]
+<dd>Satyanarayanan, M., Howard, J. H., Nichols, D. A.,
+Sidebotham N., and Spector A. Z. <i>The ITC Distributed File System:
+Principles and Design</i>. <u>Proceedings of the 10th ACM Symposium on
+Operating System Principles</u>. 1985.</unknown><br>
+
+<unknown><dt><a name="[Side86]">[Side86]
+<dd>Sidebotham, R. N. <i>Volumes: The Andrew File System
+Data Structuring Primitive.</i> Technical Report
+CMU-ITC-053. Information Technology Center, Carnegie Mellon
+University. 1986. </unknown><br>
+
+<unknown><dt><a name="[Stei88]">[Stei88]
+<dd>Steiner, J., Neuman, C., Schiller,
+J. J. <i>Kerberos: An Authentication Service for Open Network
+Systems.</i> <u>Proceedings Winter USENIX Conference.</u>
+1988</unknown><br>
+
+<unknown><dt><a name="[Tich90]">[Tich90]
+<dd>Tichy, Walter F. <i>RCS: A System for Version
+Control</i>. Provided with the RCS 5.5 distribution.</unknown><br>
+
+<unknown><dt><a name="[Vanr91]">[Vanr91]
+<dd>Vanryzin, David. <i>Flexible Administration for
+AFS</i>. <u>Proceedings of the Fall AFS Users
+Group</u>. 1992</unknown><br>
+
+<unknown><dt><a name="[Youn85]">[Youn85]
+<dd>Yount, Russell. <i>Package</i>. Academic
+Services. Carnegie Mellon University. 1985.</unknown>
+
+</dl>
+<hr><h3>Footnotes</h3><dl compact><dt><a name="FN1">(1)</a><dd>A tree is a general object like /usr/local. An environment is a specific part of a tree. For example, the beta test /usr/local with Sparc binaries.<dt><a name="FN2">(2)</a><dd>@sys is being used to represent all the supported architectures.<dt><a name="FN3">(3)</a><dd>foo/{015, 016, 017} represents multiple instances of foo. This notation expands to the following list: foo/015, foo/016, and foo/017.</dl><a name="ENDFILE"><pre> </pre></a>
+</body>
+</html>

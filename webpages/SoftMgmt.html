@@ -1,0 +1,439 @@
+<html>
+<head>
+<title>software management in the andrew system <title>
+</head>
+<body>
+<!-- Your Comment Here! Mail be0k+@andrew.cmu.edu --!>
+<!-- template default --!><p>
+<h1>Software Management in the Andrew<br> Distributed 
+UNIX System at CMU</h1>
+
+Mark Held<br>
+Carnegie Mellon University<br>
+Computing and Communications<br>
+2/17/92<br>
+<h2>Conventions </h2> <p>
+This section will describe the conventions in place for AFS volume names and 
+tree structures.  These conventions apply to all applications software 
+ installed in the Andrew File System.  <p>
+<p>
+<h3>Source Volumes</h3><p>
+
+Each application will be constructed from sources under the directory:<p>
+
+<samp>/afs/andrew.cmu.edu/system/src/local</samp><p>
+
+In directories for the application and revision number:<p>
+
+<samp>${application_name}/${revision_number}</samp> <p>
+
+The  ${application_name} field must be no longer than nine characters in 
+length.  The ${revision_number} is three digits in length and typically 
+begins as "011".  It is incremented with each succeeding version.  The 
+${revision_number} has nothing to do with vendor's revision numbers as it is 
+possible to make several releases and bug fixes of a single vendor's version 
+of software.  The ${revision_number} is used for internal control and 
+software management only.  It is also used to relate source, binary and object 
+files of a particular version.  The "local" element in the path has 
+corresponding "contributed" and "os" elements for /usr/contributed and 
+vendor-supplied operating system software respectively.  The last path 
+element, ${revision_number}, is an AFS mountpoint for the source volume for 
+that version of the software.<p>
+
+The source volumes will be named using the following convention:<p>
+
+<samp>src.${application_name}.${revision_number}</samp><p>
+
+The ${application_name} and ${revision_number} fields are identical to 
+those fields in the path name.  <p>
+
+Note that there is no reference to the environment in which the software is 
+installed (e.g. "local" or "contributed") in the volume name.  There are 
+several reasons for this.  First, the naming scheme does not require re-naming 
+of any volumes if a package moves from local to contributed or vice versa. 
+ Second, the naming convention does not restrict the creation of new sets of 
+collections (e.g. /usr/misc or /usr/stats) and the placing of already existing 
+software in that new collection.   New environments and collections can be 
+created and supported using the established conventions without modification. <p>
+
+The use of the name "src" or source does not imply that every volume so named 
+contains source code.  Binary distributions from vendors are also maintained 
+in the source volumes.  A "src" volume is created for every software package 
+which is to be installed or evaluated.  This guarantees that the software 
+which is installed on the system, whether it is a binary or source 
+distribution is uniformly backed-up and available through a common directory 
+structure.  In general src volumes contain what was received from a vendor and 
+is to be installed in CMU's distributed UNIX environment.  <p>
+<p>
+<h3>RCS</h3><p>
+
+For developers or software maintainers who wish to use rcs there is 
+only one option which is to simply create RCS subdirectories in the source 
+volume provided.  This technique works best with the currently implemented 
+software management scheme and avoids the management and update problems 
+created when seperate rcs volumes are used.  In cases where seperate rcs 
+volumes have existed in the past, new versions will require that both the rcs 
+and the sources be merged into a single volume.  <p>
+<p>
+<h3>Archive Volumes</h3><p>
+
+There will be a "read-only" archive tree, rooted at:<p>
+
+<samp>/afs/andrew.cmu.edu/system/archive</samp><p>
+
+This tree will contain out-of-the-can versions of application and system 
+software which will provide an on-line reference archive of unaltered vendor 
+software.  The level under the archive directory will contain a logical, 
+top-level organization for the software stored there. Currently vendor names 
+are used as the top-level under "archive". For example, a "dec" directory 
+could contain "ultrix.v.2.2" and "ultrix.v.3.0" mountpoints, and a "transarc" 
+directory would provide a top-level for the afs software we receive. There may 
+be cases where the name  of the vendor does not provide an intuitive 
+understanding of the software stored there, so other naming schemes could be 
+employed. The point is to provide an area where the vendor supplied tapes can 
+be unloaded, stored and referenced which is organized in such a fashion so as 
+to provide an intuitive understanding of the archive's contents. <p>
+
+Archive volumes will not be backed up, nor replicated. The volumes will be 
+named as follows:<p>
+
+<samp>arc.${vendor}.${application_and_version}</samp><p>
+
+In this manner the DEC Ultrix sources referenced above would be named:<p>
+
+<samp>arc.dec.ultrix.2_2 and arc.dec.ultrix.3_0</samp><p>
+
+On-line archives are created only when the software is of a critical nature to 
+the operation of the system (e.g. OS source, file system source) and the 
+reading of tapes would be a time consuming process. <p>
+<p>
+<h3>Objects</h3><p>
+
+The washing machines each have large (600 MB) local disks.  Developers will 
+use the /usr/obj directories on these machines as compilation directories. 
+ Refer to the section on washing machines for details on the use of these 
+resources.  The /usr/obj on each washing machine directory will be cleaned at 
+random intervals.  <p>
+
+In the case where objects need to be maintained for some reason AFS object 
+volumes can be created.   Reasons for requesting AFS object volumes could 
+include: the need to retain unstripped binaries for debugging purposes, or the 
+application is so large and complex that it would be difficult and 
+time-consuming to recreate all objects to test a small change.  If object 
+volumes are needed, then the request for these volumes must be accompanied by 
+a supporting explanation.  <p>
+
+Object volumes which are created will be mounted under:<p>
+
+<samp>/afs/andrew.cmu.edu/system/obj/${SYS}/</samp><p>
+
+as:<p>
+
+<samp>${application-name}/${version_number}</samp> <p>
+
+The object volumes will be named as follows:<p>
+
+<samp>.{$SYS}.${application_name}.${version_number}</samp><p>
+
+Note the preceding "." in the object volume name.<p>
+<p>
+<h3>Destination Volumes</h3><p>
+
+Destination volumes hold the software that is released to the various 
+environments.   These system-specific volumes will at all times be accessible 
+through the path:<p>
+
+<samp>/afs/andrew.cmu.edu/system/dest/${SYS}/local/</samp><p>
+
+as:<p>
+
+<samp>${application-name}/${version_number} </samp><p>
+
+The destination volumes will be named as follows:<p>
+
+{$SYS}.${application_name}.${version_number}<p>
+
+These destination volumes are also mounted in different environments as part 
+of the release process.  See the section on Releases for details of this 
+process. <p>
+<p>
+<h3>Common</h3> <p>
+Common volumes are created for applications which have large collections of 
+non-system specific files.  For example, applications which have their own 
+internal help systems often have large amounts of data which can be shared 
+among all system types.  These volumes are mounted under the appropriate 
+destination volumes as the directory "common".  Applications which are 
+installed on a single system type never need common volumes.  In cases where 
+the savings are not substantial (i.e. at least 20 Megabytes) common volumes 
+are not used.  <p>
+
+Common volumes will be named as follows:<p>
+
+<samp>common.${application_name}.${version_number}</samp><p>
+
+<h3>Permissions</h3><p>
+
+All volumes which are created have a set of default permissions.  This set 
+includes:  <p>
+
+<samp>system:campusnet rl (read/lookup rights); <br>
+sysmaint:localboss all (adminstrative rights); <br>
+sysmaint:${application_name}. commanders all (adminstrative rights).<br>
+</samp>
+The members of the commanders group can add or delete user id's from the 
+commander's list.  The commanders are the software maintainers for the 
+application in question.  <p>
+<p>
+
+<h3>Tools<p>
+</h3>
+This section will briefly describe some of the tools available for use 
+by software maintainers who wish to install software in /usr/local.  Not 
+mentioned are tools which are used for software release and environment 
+maintenance which are used by the gatekeeper.  Those tools (such as "depot", 
+"adm" and "emt")  will be covered in another paper.<p>
+<p>
+<h3>Washing Machines</h3><p>
+
+Washing machines are provided and maintained by C&amp;C for the purpose of 
+compiling software.  One machine exists for each supported system type.  These 
+machines are named with their system type,  specifically the output of "sys 
+-c"for that system type.  For example running "sys -c"  on a sun4 yields the 
+string "sun4c".  The  sun4 washing machine is named "sun4c.wash.acs.cmu.edu". 
+  <p>
+
+Access to the washing machines is restricted via /etc/user.permits.  If a 
+software maintainer cannot access these machines, then the washing machine 
+maintainer should be notified.  A post on org.acs.request.washconfig will 
+notify the maintainer.  By default the washing machines are linked to the beta 
+version of /usr/local.  In the event that a software maintainer wishes to 
+custom link a washing machine for a particular software build process, a post 
+on  org.acs.request.washconfig will notify the washing machine maintainer. 
+ Such a post should be accompanied by an explanation for the request. 
+ Customization of washing machines should be needed only very rarely.  <p>
+
+Currently the washing machines do not support and of the Berkeley "r" 
+commands.  Access is via telnet only.  One improvement would be the 
+implementation of "rsh" on these machines and some script which runs a 
+software construction command on all washing machines.<p>
+
+It should be noted that often staff members use their own workstations to 
+compile software.  The washing machines are a shared resource and all attempts 
+to employ other resources are encouraged.  <p>
+<p>
+<h3>Build</h3><p>
+
+The "build" program is installed in /usr/local/bin and is a powerful 
+tool for compiling and installing software in CMU's distributed UNIX 
+environment.  It is fairly trivial to convert standard Makefiles to files 
+which "build" can use in a distributed environment.  Build provides a set of 
+macros which are defined in a top-level "Buildfile".  The default "Buildfile" 
+is installed under:<p>
+
+<samp>/afs/andrew.cmu.edu/system/src/{local contributed}</samp><p>
+
+The simplest case would be to modify the vendor supplied Makefile to install 
+the software into ${DESTDIR}, rather than some absolute path.  The "build" 
+program resolves ${DESTDIR} to be the top level of the destination volume. 
+ The software maintainer can treat ${DESTDIR} as if it were "/usr/local" for 
+installation purposes.  The software maintainer should make no assumptions 
+about the existence of any directory structure, so all subdirectories under 
+/usr/local must be created before anything can be installed there.  For 
+example, to install a binary in /usr/local/bin the following lines should be 
+in the Makefile (assume an "install" target):<p>
+
+<samp>install:<br>
+<ul><ul>	- mkdir ${DESTDIR}/bin<br>
+	cp the_program ${DESTDIR}/bin<br>
+</ul></ul></samp>
+So, if this were the only path dependency in the compilation, link and install 
+process you could telnet to a washing machine, cd to the source and run "build 
+install".  "Build" would automatically compile and link the objects under 
+/usr/obj on the washing machine, and install the binary files in the 
+destination volume.  <p>
+
+Problems with build involve its inability to correctly resolve nested 
+Makefiles.  A second problem is with Makefiles which create bootstrap images. 
+ In this case, Build always assumes that "created" objects are in the object 
+directory, while the Makefile assumes that they are in the source directory. 
+ A third problem is with self-referential applications which use the 
+installation pathname as the path to be compiled into binaries.  This last 
+assumption causes problems when software is moved between environments.  <p>
+
+Any string compiled into a binary must begin with /usr/local/ .  This point 
+cannot be overemphasized.  Path dependancies must never use the longer 
+pathnames as this would circumvent the release process.  Often vendors make 
+the gross and incorrect assumption that where you wish to install the software 
+is where it should be referenced.  This assumption fails in the Andrew 
+Distributed UNIX Environment.  Errors such as this are commonly made by 
+vendors who do not design installation procedures for distributed 
+heterogeneous environments. <p>
+
+For more information on "build" see the build.1 man page.  <p>
+<p>
+<h3>Mklink</h3><p>
+
+The "mklink" program is installed in /usr/local/bin and is used to 
+create masses of symbolic links from system-specific object directories to a 
+common source tree.  Then, standard "make" can be run in the object tree. 
+ This technique is useful when the Makefiles are nested and very complex, 
+rendering a conversion from "make" to "build" difficult to do.  Simply telnet 
+to a washing machine, make a directory under /usr/obj, cd there and run mklink 
+with the long pathname to the source volume as the only argument.  Typically, 
+mklink is run with the -RrvF flags.  Running /usr/local/bin/mklink -x will 
+output the usage message.  <p>
+<p>
+<h3>Dpp</h3><p>
+
+The dpp tool can be used to create a custom /usr/local on the local 
+disk of a workstation.  With this tool, an application with path dependencies 
+can be trivially tested without requesting a release to an environment.  This 
+effectively take the place of an "alpha" tree.  Real environmental integration 
+testing can be done before anything is released.  This process requires at 
+least 10 Megabytes of local disk space.  <p>
+
+The easiest way to use this tool is to add two lines to your 
+/etc/package.proto:<p>
+
+<ul><samp>
+	%define usesdepot<br>
+%define localdepotdir</ul></samp>
+
+and boot the machine.  Please note that this process can take some time the 
+first time through.  After the machine comes up , you must modify the:<p>
+
+<samp> /usr/local/depot/custom.depot.proto </samp><p>
+
+file which is created by dpp.  The software maintainer must add a line which 
+will link in the test software from wherever it exists with the rest of 
+/usr/local.  Then run "/opr/dodepot /usr/local" to update the environment to 
+include the new application.  <p>
+<p>
+<h3>Installing Software</h3><p>
+
+Installation of software into the Andrew distributed UNIX environment 
+is a rather straight-forward task.  First, the software maintainer must 
+request space on the system for source and destination volumes.  See:<p>
+
+/afs/andrew.cmu.edu/acs/asg/doc/software/volume-request.ez.d<p>
+
+for details on this process.  Then using some technique (build, make, imake, 
+cp, ...) create the binary files and install them in the destination volume. 
+ The directory hierarchy under the destination volume must mirror the desired 
+directory hierarchy under /usr/local.  If you wish to install a binary in 
+/usr/local/bin, then make a "bin" directory in the destination volume and 
+install the binary there.  If you want to install some files in 
+/usr/local/lib/foo/bar, then create the structure "lib/foo/bar" under the 
+destination volume and install the files there.  <p>
+
+If this sounds too simple, that's because the concept is simple.  Because the 
+concept is trivial, it is possible to install software from many different 
+vendors using any number of installation techniques into the Andrew 
+Distributed UNIX system.<p>
+
+In the case where it is not possible to create the desired directory 
+structure, then a simple configuration file must be created and installed in 
+the top level of the destination volume.  This configuration file is called 
+"depot.conf" and is a simple mapping between the structure in the destination 
+volume and the /usr/local directory structure.  <p>
+
+For example in cases where a "common" volume is used, a depot.conf must be 
+written which will do the required mapping.  The depot.conf file in this case 
+would be simply:<p>
+
+<samp>/	/<br>
+~delete common<br>
+common	/<br>
+~afsmountpoint	common<br>
+</samp>
+Please look at the depot.conf man page for further explanation.<p>
+<p>
+<h3>Releasing Software</h3><p>
+
+Releasing the software to either the beta or gamma environment is 
+simply a matter of requesting a release.  See:<p>
+
+/afs/andrew.cmu.edu/acs/asg/doc/software/volume-request.ez.d<p>
+
+for details on how to request a release to either of these environments.  <p>
+
+It is also possible to create a custom environment in which the software can 
+be tested on the local disk of a workstation using the "dpp" and "depot" 
+tools.  See the section on Dpp in the tools section.  This will describe how 
+to create a /usr/local on the local drive of a workstation so that software 
+can be tested before being released to an environment. <p>
+<p>
+<h2>Glossary</h2><p>
+
+<dl> <dt><b>AFS</b><dd>&gt; Andrew File System.  This distributed file system
+is used on the Andrew System at CMU.  AFS was developed at CMU and is
+a product of Transarc Corporation. <p>
+
+<dt><b>Adm</b><dd>  The ADministrative server.   This server is used to perform 
+selected, configurable administrative tasks for specified users.  The users do 
+not need special privileges such as administrative tokens to perform these 
+tasks. <p>
+
+<dt><b>Beta</b><dd>  An environment where software which is being tested by select 
+staff members can be installed.  The beta environment is a stable environment 
+as software which is discovered to be broken is removed from the beta 
+environment.  Preliminary software testing is done by developers in custom 
+environments.  <p>
+
+<dt><b>Collection</b><dd>  A file or group of files that are logically related.  A 
+collection could be the group of files that are part of a single software 
+package (e.g. gnu-emacs).   A collection could also be a group of files that 
+are related with respect to their function on the system.  For example, the 
+"tools" collection contains all of the tools needed to create /usr/local on a 
+new system type.  <p>
+
+<dt><b>Custom Environment</b><dd>  An environment which is created for a particular 
+workstation.  A custom environment may be created to do preliminary or 
+integration testing of a software product.  <p>
+
+<dt><b>Depot</b><dd> The tool used to create environments from groups of collections. 
+ Typically, in AFS, this is done via masses of symbolic links.  See the 
+depot.1 man page for details.  <p>
+
+<dt><b>Dpp</b><dd>  The Depot Pre-Processor.  This tool is used to trivially create 
+custom environments for software testing.  See the dpp.1 man page for more 
+detail.<p>
+
+<dt><b>Emt</b><dd>  Environment Maintenance Tool.  This is a tool which is used to 
+create new versions of applications, do software releases, archive and delete 
+old versions of software.  This tool is used by the environment gatekeeper.  <p>
+
+<dt><b>Environment</b><dd>  A collection of software collections.  This is where all 
+of the various collections are integrated to create a single point of access 
+for the user.  /usr/local and /usr/contributed are environments.  Further, 
+there can be several instantiations of an environment.   We maintain a "beta" 
+and "gamma" /usr/local.  Each is a separate environment and has a specific 
+use.<p>
+
+<dt><b>Gamma </b><dd> The campus or released environment.  This refers to software 
+which is available on the publicly available workstations.  <p>
+
+<dt><b>Gatekeeper</b><dd>  The individual through whom requests for releases must be 
+queued.<p>
+
+<dt><b>Imake </b><dd> An enhanced version of the "make" utility, often used with 
+X11-based applications.<p>
+
+<dt><b>Make</b><dd>  A UNIX utility which automates the task of compiling, linking 
+and installing software.  This utility does not work well in heterogeneous 
+distributed systems and must be enhanced.<p>
+
+<dt><b>Pts</b><dd>  AFS Protection Server.  This command is used to create, modify, 
+and delete protection groups in AFS.<p>
+
+<dt><b>Software Maintainer</b><dd>  Anyone who installs software in an environment.  <p>
+
+<dt><b>$SYS</b><dd>  The system type for which system dependent volumes are created. 
+ Currently, supported system types are: sun4411 (for Sun4's and Sparc's 
+running SUNOS V.4.1.1) and pmax_42 (for DecStation 2100's, 3100's and 5000's 
+running Ultrix V.4.2).<p>
+<p>
+<p>
+<p>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<html><head>
+<title>Andrew Setup For Depot
+</title>
+</head><body><h1>Andrew Setup For Depot
+</h1>
+
+ <p>This document is an overview of how to use local disk depot (LDD)
+on an Andrew Workstation. LDD is used to create an environment on the
+local disk of a work station.  In order to use LDD, one must have root
+access to a workstation. The examples given below show how to build a
+local environment. To build a contributed environment, simply replace
+"local" with "contrib."
+
+</p><h2>Setup</h2>
+
+In order to set up LDD, one must have root access to a workstation.
+<ol>
+ <li>Log in as root.
+
+ </li><li> Modify the /etc/package.proto by adding the following lines to
+the top of the file:
+ <pre>	%define usesdepot
+	%define localdepotdir
+</pre>
+NOTE: These must be put in BEFORE the "%include" line(s).
+
+
+ </li><li>Reboot the machine.  When the machine comes back up, there should
+be the directory, /usr/local/depot containing a small number of files
+on the local machine. The files that should be there are:
+<pre>	depot.pref.proto{.BAK}
+	depot.pref{.BAK}
+	collection_list.{.BAK}
+	depot.db
+</pre>
+</li></ol>
+ <p>Also located in the depot directory may be two optional
+files. They are:
+</p><pre>	depot.conf.proto
+	depot.conf
+</pre>
+
+ <p>At this time, /usr/local is now on the local hard drive. However,
+all the files are still symbolic links to the appropriate files on AFS
+and you can now refer to the Using-Depot.txt document for instructions
+on what options are available.
+
+ </p><p>For those who are already familiar with this type of set up,
+Appendix A contains a faster way to create an environment with fewer
+reboots.
+
+</p><h2>Package</h2>
+
+ <p> Package changes may need to be made when using dpp and depot.
+For example, when copying the depot.pref.proto from AFS, some changes
+may be made in the pakages as a precaution. By default, the
+depot.pref.proto is copied once to the local disk of the workstation
+and then not touched by package henceforth. This may not be an ideal
+situation, if the disk goes bad, there may not be another copy of the
+depot.pref.proto. As a precaution, some may wish to update the
+depot.pref.proto from AFS. To do so, the following package changes are
+required:
+ </p><pre>	FA	/usr/local/depot/depot.pref.proto	&lt;AFSPATH&gt;
+	%define haslocaldepot.pref.proto
+
+</pre>
+ where &lt;AFSPATH&gt; is the path to the depot.pref.proto file on AFS.
+
+ <p>A second reason for package changes might be that a maintainer may
+wish to prevent /usr/local/depot from being cleaned. By default,
+/usr/local/depot is "cleaned" by package. That is, files that aren't
+specified are removed. This can be done one of two ways:
+</p><ol>
+ <li>Specify that /usr/local/depot should not be updated by
+package. This can be done by:
+ <pre>		D	/usr/local/depot
+		%define	has/usr/local/depot
+
+</pre>
+ </li><li>Specify all the collections installed in /usr/local/depot. For
+example, if you have the 'foo' collection stored in /usr/local/depot,
+you would protect it by:
+<pre>		D	/usr/local/depot/foo		root wheel 755
+</pre>
+</li></ol>
+
+<h2>Automatic Updating</h2>
+
+ <p>By default, an entry will be added to your crontab file so that
+depot will automatically update /usr/local and/or /usr/contributed if
+you have those environments local disk depot'd.
+
+ </p><p>The time will be chosen "randomly" based on the IP address for
+your workstation. This means that as long as your machine has the same
+IP address, the updates will occur at the same time every week. The
+update will occur between midnight and 6:59am on a day other than
+Sunday. For the exact time, check out your crontab file. (NOTE: If
+your machine is beta linked, the updates occur nightly.)
+
+ </p><p>For more information on how this is done, see the cronadd(8) man
+page.
+
+ </p><p>To disable depot updates at any time, you can create the file: 
+</p><pre>		/etc/NoDepot
+</pre>
+
+ <p>To disable the automatic updating of the crontab file, the entry
+</p><pre>		%define hasrc.local.depot-cronadd
+</pre>
+ can be added your /etc/package.proto file.
+
+ <p>Be aware that Computing Services requires that a successful depot
+run must occur at least once every 30 days. If that does not occur,
+errors may occur in the system software.
+
+</p><h2>Booting Takes Too Long</h2>
+
+To make a machine boot faster (i.e. not run depot on boot),
+create a file
+<pre>	/etc/NoDepotOnBoot
+</pre>
+
+ <p>This will inhibit /etc/dodepot from running on boot. 
+
+</p><h2>Appendix A: A faster way to create an environment</h2>
+
+ <p>This is a faster way to build an environment. The package changes
+will still need to be done, however, an immediate reboot is not
+necessary. For those who do not understand what is going on here, it
+is better to spend the extra time and do it the "easy" way.
+</p><pre>	% mkdir -p /usr/local.new/depot
+	% cd /usr/local.new/depot
+	% cp /afs/andrew/wsadmin/services/specific/depot/&lt;SYS&gt;/depot.pref.proto.local.gamma ./depot.pref.proto
+	&lt; edit the depot.pref.proto &gt;
+	% /etc/dodepot /usr/local.new
+	% cd /usr
+	% rm local
+	% mv local.new local
+</pre>
+
+<hr>
+Return to: <b>|</b>
+<a href="depot.html">Depot Top Level</a>
+<b>|</b>
+<a href="doc-setup.html">Depot Guides</a>
+<b>|</b>
+</body></html>
